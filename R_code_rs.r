@@ -6,7 +6,7 @@ library(raster)
 #settaggio cartella di lavoro, "set working directory"
 setwd("C:/lab/")
 
-#importiamo dati. P sta per "path", R sta per "row", numeri assegnati in base al percorso del satellite.
+#importiamo dati. P sta per "path", R sta per "row", numeri assegnati in base al percorso del satellite. "Brick" serve per catturare dati e caricarli dentro R: carica tutta l'immagine satellitare, tutte le bande insieme.
 l2011 <- brick("p224r63_2011.grd")
 l2011
 
@@ -100,20 +100,39 @@ clnir <- colorRampPalette(c("red", "orange", "yellow")) (100)
 plot(l2011$B4_sre, col=clnir)
 
 # 24 marzo
+
 # Plot of l2011 in the NIR channel (NIR band)
 clnir <- colorRampPalette(c("red", "orange", "yellow")) (100)
 plot(l2011$B4_sre, col=clnir)
 # Or
 plot(l2011[[4]])
 
-# Plot RGB layers (stretch: amplia i valori dei colori per renderli più visibili)
+# Plot RGB layers, il numero corrisponde all'elemento, cioè il numero della banda (stretch: amplia i valori dei colori per renderli più visibili)
 plotRGB(l2011, r=3, g=2, b=1, stretch="lin")
+# Sostituisco la banda NIR al posto della banda del rosso, di conseguenza scalo le altre bande fino ad escludere la banda del blu. Quindi metterò NIR al posto del rosso, il rosso al posto del verde e il verde al posto del blu. Tutto quello che è rosso è vegetazione, questo perchè la pianta riflette l'IR.
+plotRGB(l2011, r=4, g=3, b=2, stretch="lin")
+# Sostituisco la banda NIR alla componente Green, rimettendo la banda 3 nella componente R. Serve per vedere meglio la vegetazione e la sua struttura, in questo caso la vegetazione è verde fluo.
+plotRGB(l2011, r=3, g=4, b=2, stretch="lin")
+# Sostituisco la banda NIR alla componente Blu, le bande del rosso e verde sono nelle rispettive componenti. La vegetazione diventa blu e serve per vedere meglio il suolo nudo che nell'immagine diventa giallo.
+plotRGB(l2011, r=3, g=2, b=4, stretch="lin")
 
+# Proviamo a cambiare lo stretch nel plot con NIR nella componente Green
+plotRGB(l2011, r=3, g=4, b=2, stretch="hist")
 
+# Esercizio: costruire multiframe con la visualizzazione a colori naturali RGB (linear stretch) sopra ai false colors (histogram stretch)
+par(mfrow=c(2,1))
+plotRGB(l2011, r=3, g=2, b=1, stretch="lin")
+plotRGB(l2011, r=3, g=4, b=2, stretch="hist")
 
+# Esercizio: carica l'immagine del 1988
+l1988 <- brick("p224r63_1988.grd")
+l1988
+plot(l1988)
 
-
-
+# Confrontiamo le due immagini con un multiframe mettendo la banda NIR nella componente R e scalando le altre 2
+par(mfrow=c(2,1))
+plotRGB(l1988, r=4, g=3, b=2, stretch="lin")
+plotRGB(l2011, r=4, g=3, b=2, stretch="lin")
 
 
 
