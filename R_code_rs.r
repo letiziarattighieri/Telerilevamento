@@ -86,7 +86,7 @@ plot(l2011$B4_sre)
 clnir <- colorRampPalette(c("red", "orange", "yellow")) (100)
 plot(l2011$B4_sre, col=clnir)
 
-#facciamo multiframe con tutte e 4 le bande. Ricordati di plottare prima singolarmente le immagini perchè altrimenti dà errore in R
+# Facciamo multiframe con tutte e 4 le bande. Ricordati di plottare prima singolarmente le immagini perchè altrimenti dà errore in R
 par(mfrow=c(2, 2))
 #blue
 plot(l2011$B1_sre, col=clb) 
@@ -98,3 +98,25 @@ plot(l2011$B3_sre, col=clr)
 # NIR
 clnir <- colorRampPalette(c("red", "orange", "yellow")) (100)
 plot(l2011$B4_sre, col=clnir)
+
+# 24 marzo
+# Plot of l2011 in the NIR channel (NIR band)
+clnir <- colorRampPalette(c("red", "orange", "yellow")) (100)
+plot(l2011$B4_sre, col=clnir)
+# Or
+plot(l2011[[4]])
+
+# Plot RGB layers (stretch: amplia i valori dei colori per renderli più visibili)
+plotRGB(l2011, r=3, g=2, b=1, stretch="lin")
+
+
+
+
+
+
+
+
+
+
+
+
