@@ -99,9 +99,10 @@ plot(l2011$B3_sre, col=clr)
 clnir <- colorRampPalette(c("red", "orange", "yellow")) (100)
 plot(l2011$B4_sre, col=clnir)
 
+
 # 24 marzo
 
-# Plot of l2011 in the NIR channel (NIR band)
+# Plot of l2011 in the NIR channel (NIR band) (prima abbiamo ricaricato il pacchetto raster e abbiamo settato la working directoy)
 clnir <- colorRampPalette(c("red", "orange", "yellow")) (100)
 plot(l2011$B4_sre, col=clnir)
 # Or
@@ -133,7 +134,6 @@ plot(l1988)
 par(mfrow=c(2,1))
 plotRGB(l1988, r=4, g=3, b=2, stretch="lin")
 plotRGB(l2011, r=4, g=3, b=2, stretch="lin")
-
 
 
 
