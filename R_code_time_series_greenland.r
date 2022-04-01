@@ -41,3 +41,4 @@ plot(tgr[[1]], col=cl)
 
 # Proviamo a plottare i dati con plotRGB, mettendo le bande in ordine cronologico nelle 3 componenti R, G, B. Posso giocare con la sovrapposizione delle bande visto che ne ho 4 ma posso usarne solo 3 alla volta.
 plotRGB(tgr, r=1, g=2, b=3, stretch="lin")
+
