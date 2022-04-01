@@ -97,9 +97,3 @@ plot(si2006, col=cl)
 install.packages("rasterdiv")
 library(rasterdiv)
 plot(copNDVI)
-
-
-
-
-
-
