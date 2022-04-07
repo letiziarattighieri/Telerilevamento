@@ -42,3 +42,54 @@ plot(tgr[[1]], col=cl)
 # Proviamo a plottare i dati con plotRGB, mettendo le bande in ordine cronologico nelle 3 componenti R, G, B. Posso giocare con la sovrapposizione delle bande visto che ne ho 4 ma posso usarne solo 3 alla volta.
 plotRGB(tgr, r=1, g=2, b=3, stretch="lin")
 
+
+
+
+# 7 aprile
+# Analisi della diminuzione degli ossidi di azoto, NO2, durante il lockdown iniziale 2020
+# NO2 decrease during the lockdown period in 2020
+# EN means European Nitrogen
+
+library(raster)
+setwd("C:/lab/EN")
+
+# Importiamo il primo dato usando la funzione raster perché ha un solo layer, altrimenti, se ne avesse avuti di più come gli RGB allora avrei usato funzione brick
+# en01 è gennaio 2020 ed è un dato a 8 bit
+en01 <- raster("EN_0001.png")
+en01 
+cl <- colorRampPalette(c('red','orange','yellow'))(100)
+plot(en01, col=cl)
+
+# Importiamo il dato corrispondente a fine marzo 2020
+en13 <- raster("EN_0013.png")
+plot(en13, col=cl)
+
+
+# Let's import the whole set (altogether)
+# Excercise: import the whole set as in the Greenland example by the following steps: list.files, lapply, stack
+
+rlist <- list.files(pattern="EN")
+
+rimp <- lapply(rlist, raster)
+
+en <- stack(rimp)
+
+plot(en, col=cl)
+
+# Excercise: plot en01 besides en13
+par(mfrow=c(1, 2))
+plot(en$en01, col=cl)
+plot(en$en13, col=cl)
+
+# Oppure, invece del multiframe, posso fare stack da cui prendo i 2 elementi
+en113 <- stack(en[[1]], en[[13]])
+plot(en113, col=cl)
+
+# Let's make the difference between en01 and en13. Il rosso indica le zone in cui il calo è stato maggiore
+difen <- en[[1]] - en[[13]]
+cldif <- colorRampPalette(c("blue", "white", "red"))(100)
+plot(difen, col=cldif)
+
+
+
+
