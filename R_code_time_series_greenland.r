@@ -92,4 +92,35 @@ plot(difen, col=cldif)
 
 
 
+# 8 aprile
+# Usiamo una funzione per usare un codice che deriva da altre fonti
+# Riprendo parte del codice e lo salvo su word in .txt
+
+library(raster)
+setwd("C:/lab/EN")
+en01 <- raster("EN_0001.png")
+en01 
+cl <- colorRampPalette(c('red','orange','yellow'))(100)
+plot(en01, col=cl)
+
+
+setwd("C:/lab/")
+source("R_inputcode.txt")
+
+# Importiamo tutte le immagini della cartella EN
+rlist <- list.files(pattern="EN")
+rimp <- lapply(rlist, raster)
+en <- stack(rimp)
+cl <- colorRampPalette(c('red','orange','yellow'))(100)
+plot(en, col=cl)
+
+# Ora facciamo il plot RGB, usiamo le immagini 1, 7 e 15 nelle tre componenti R, G, B in cui i valori massimi di NO2 saranno del colore della componente corrispondente
+plotRGB(en, r=1, g=7, b=15, stretch="lin")
+plotRGB(en, r=1, g=7, b=13, stretch="hist")
+
+# Finita la parte delle time series
+
+
+
+
 
