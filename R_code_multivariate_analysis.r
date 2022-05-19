@@ -24,3 +24,5 @@ g1 + g2
 p224r63_2011res100 <- aggregate(p224r63_2011, fact=100)
 g3 <- ggRGB(p224r63_2011res100, 4, 3, 2)
 g1 + g2 + g3
+
+
