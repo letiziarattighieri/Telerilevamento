@@ -8,29 +8,47 @@ library(patchwork)
 library(viridis)
 setwd("C:/lab/")
 
+# Importo l'immagine del ghiacciaio del Similaun
+# La funzione brick serve per poter importare l'intero pacchetto di dati
 sen <- brick("sentinel.png")
+sen
 
-# b1 = NIR
-# b2 = Red
-# b3 = Green
+# band 1 = NIR
+# band 2 = Red
+# band 3 = Green
 
+# Facciamo un plot dell'immagine con ggplot
+# Lo stretch è già lineare, non è necessario speficarlo con ggplot
 ggRGB(sen, 1, 2, 3)
 
-# Exercise: visualize the image such as vegetation becomes green (fluo)
+# Exercise: visualize the image such as vegetation becomes green and the soil becomes purple
 ggRGB(sen, 2, 1, 3)
 
-# Multivariate analysis
+# Multivariate analysis: passiamo dai 3 layer a PC1 che compatta tutte le informazioni 
+# In questo caso non abbiamo fatto il ricampionamento perché l'imamgine è leggera
 sen_pca <- rasterPCA(sen)
 sen_pca
+# Ci sono tanti gruppi, nella classificazione ad es. avevamo solo la $map
+# Per la PCA ci sono diverse componenti: 
+# $call è la funzione che abbiamo usato
+# $model è il modello che utilizziamo: facciamo la matrice di correlazione tra le bande per vedere dove far passare gli assi della PCA
+# $map è la mappa finale
+# attr sono gli attributi, quindi la funzione e il pacchetto che abbiamo usato
 
+# Facciamo un summary del modello per sapere quanta variabilità spiega la PCA.
 summary(sen_pca$model)
+# Proportion of Variance: componente 1 spiega 67%, la 2 il 32% e la 3 il 0.3%.
 
+# Facciamo un plot per vedere le singole bande. 
+# PC1 spiega gran parte della variabilità.
 plot(sen_pca$map)
 
+# Assegnamo a ogni componente un oggetto 
 pc1 <- sen_pca$map$PC1
 pc2 <- sen_pca$map$PC2
 pc3 <- sen_pca$map$PC3
 
+# Con ggplot facciamo il plot delle singole componenti, associamo al plot un oggetto
 g1 <- ggplot() + 
 geom_raster(pc1, mapping=aes(x=x, y=y, fill=PC1))
 
@@ -40,6 +58,7 @@ geom_raster(pc2, mapping=aes(x=x, y=y, fill=PC2))
 g3 <- ggplot() + 
 geom_raster(pc3, mapping=aes(x=x, y=y, fill=PC3))
 
+# Con patchwork sommiamo i plot 
 g1 + g2 + g3
 
 # Standard deviation of PC1
