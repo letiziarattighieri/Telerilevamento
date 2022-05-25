@@ -61,8 +61,9 @@ geom_raster(pc3, mapping=aes(x=x, y=y, fill=PC3))
 # Con patchwork sommiamo i plot 
 g1 + g2 + g3
 
-# Standard deviation of PC1
+# Standard deviation of PC1: applichiamo il calcolo della standard deviation all'immagine della PC1 con la funzione focal
 sd3 <- focal(pc1, matrix(1/9, 3, 3), fun=sd)
+sd3
 
 # Map by ggplot the standard deviation of the first principal component
 ggplot() + 
@@ -102,6 +103,12 @@ geom_raster(pc1, mapping=aes(x=x, y=y, fill=PC1))
 im3 <- ggplot() +
 geom_raster(sd3, mapping=aes(x=x, y=y, fill=layer)) +
 scale_fill_viridis(option="inferno")
+
+# im1: immagine originale, l' RGB che abbiamo creato
+# im2: è la componente principale su cui abbiamo calcolato la standard deviation
+# im3: è la standard deviation basata sulla legenda "inferno" di viridis su una mw di 3x3
+# im4: è la standard deviation basata sulla legenda "inferno" di viridis ma su una mw 5x5
+# im5: è la standard deviation basata sulla legenda "inferno" di viridis ma su una mw 7x7
 
 # Calculate heterogeneity in a 5x5 moving window
 sd5 <- focal(pc1, matrix(1/25, 5, 5), fun=sd)
