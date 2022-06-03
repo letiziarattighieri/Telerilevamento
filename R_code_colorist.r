@@ -64,14 +64,5 @@ map_single(met2_distill, pal2, lambda_i = -10)
 # Legenda
 legend_timeline(pal2)
 
-
-
-
-
-
-
-
-
-
-
-
+# Codice Ludovico
+https://github.com/Ludovico-Chieffallo/Lessons 
