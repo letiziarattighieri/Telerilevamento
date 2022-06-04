@@ -19,7 +19,7 @@ soc <- unsuperClass(so, nClasses=3)
 cl <- colorRampPalette(c("yellow", "black", "red"))(100)
 plot(soc$map, col=cl)
 
-# set.seed can be used for reeating the same experiment every time
+# set.seed can be used for repeating the same experiment every time
 
 
 
