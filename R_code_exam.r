@@ -2,12 +2,14 @@
 # Le aree interessate comprendono Purto Montt, il Lago Llanquihue e il Parque Nacional Alerce Andino (Cile)
 
 # https://www.usgs.gov/faqs/what-are-best-landsat-spectral-bands-use-my-research 
-# Sito da cui ho scaricato le immagini satellitari con spiegazione di ogni banda (Landsat 8/9 Operational Land Image (OLI) and Thermal Infrared Sensor (TIRS)). 
+# Sito da cui ho scaricato le immagini satellitari con spiegazione di ogni banda (Landsat 8/9 Operational Land Image (OLI) and Thermal Infrared Sensor (TIRS)) 
 # In questo caso:
   # B2 = blue
   # B3 = green
   # B4 = red
   # B5 = NIR
+
+# Le immagini sono a 16 bit 
 
 library(raster)
 library(RStoolbox)
@@ -17,7 +19,10 @@ library(viridis)
 
 setwd("C:/lab/chile_exam/")
 
-# 2013
+
+                                              ###### IMPORTAZIONE DATI ######
+
+                                                          # 2013
 # Importo le bande relative dell'immagine del 2013 facendo una lista perché sono 8 bande separate
 # Devo importare le prime 7 bande e la banda 10 che però ha un nome diverso: 
 # quindi, per evitare di importarle singolarmente creo una lista per importare le prime  7 bande 
@@ -39,7 +44,7 @@ g1_2013 <- ggRGB(chile_2013, 5, 4, 3, stretch="lin") # NIR in R, red in G, green
 g2_2013 <- ggRGB(chile_2013, 4, 5, 3, stretch="lin") # red in R, NIR in G, green in B
 
 
-# 2021
+                                                          # 2021
 # Faccio lo stesso procedimento per importare i dati relativi all'immagine del 2021
 list_2021 <- list.files(pattern="2021_SR_B")
 
@@ -56,6 +61,7 @@ g1_2021 <- ggRGB(chile_2021, 5, 4, 3, stretch="lin") # NIR in R, red in G, green
 g2_2021 <- ggRGB(chile_2021, 4, 5, 3, stretch="lin") # red in R, NIR in G, green in B
 
 
+
 # Metto a confronto il plot del 2013 e quello del 2021
 g1_2013 + g1_2021 # Vegetazione è rossa
 g2_2013 + g2_2021 # Vegetazione è verde
@@ -64,9 +70,39 @@ g2_2013 + g2_2021 # Vegetazione è verde
 (g1_2013 + g1_2021) / (g2_2013 + g2_2021)
 
 
+                                              ###### INDICI SPETTRALI ######
 
+# Calcolo DVI, calcolo prima Difference Vegetation Index perché le due immagini hanno la stessa risoluzione
+# Riflettanza NIR - Riflettanza RED
 
+# 2013
+dvi_2013 = chile_2013[[5]] - chile_2013[[4]]
+cl <- colorRampPalette(c("darkblue", "yellow", "red", "black")) (100)
+plot(dvi_2013, col=cl)
 
+# 2021
+dvi_2021 = chile_2021[[5]] - chile_2021[[4]]
+cl <- colorRampPalette(c("darkblue", "yellow", "red", "black")) (100)
+plot(dvi_2021, col=cl)
 
+# Differenza 2013 - 2021
+dvi_dif = dvi_2013 - dvi_2021
+cld <- colorRampPalette(c("blue", "white", "red")) (100)
+plot(dvi_dif, col=cld) 
+# Le zone rosse corrispondono alle zone fortemente soggette a deforestazione, alta variazione della salute delle piante.
+
+# Calcolo NDVI: (riflettanza NIR - riflettanza RED) / (riflettanza NIR + riflettanza RED)
+# 2013
+ndvi_2013 = dvi_2013 / (chile_2013[[5]] + chile_2013[[4]])
+plot(ndvi_2013, col=cl)
+
+#2021
+ndvi_2021 = dvi_2021 / (chile_2021[[5]] + chile_2021[[4]])
+plot(ndvi_2021, col=cl)
+
+# Confronto tra i due NDVI
+par(mfrow=c(1, 2))
+plot(ndvi_2013, col=cl)
+plot(ndvi_2021, col=cl)
 
 
