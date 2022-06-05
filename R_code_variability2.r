@@ -17,7 +17,7 @@ sen
 # band 2 = Red
 # band 3 = Green
 
-# Facciamo un plot dell'immagine con ggplot
+# Faccio un plot dell'immagine con ggplot
 # Lo stretch è già lineare, non è necessario speficarlo con ggplot
 ggRGB(sen, 1, 2, 3)
 
@@ -25,30 +25,30 @@ ggRGB(sen, 1, 2, 3)
 ggRGB(sen, 2, 1, 3)
 
 # Multivariate analysis: passiamo dai 3 layer a PC1 che compatta tutte le informazioni 
-# In questo caso non abbiamo fatto il ricampionamento perché l'imamgine è leggera
+# In questo caso non ho fatto il ricampionamento perché l'imamgine è leggera
 sen_pca <- rasterPCA(sen)
 sen_pca
-# Ci sono tanti gruppi, nella classificazione ad es. avevamo solo la $map
+# Ci sono tanti gruppi, nella classificazione ad es. avevo solo la $map
 # Per la PCA ci sono diverse componenti: 
 # $call è la funzione che abbiamo usato
-# $model è il modello che utilizziamo: facciamo la matrice di correlazione tra le bande per vedere dove far passare gli assi della PCA
+# $model è il modello che utilizziamo: faccio la matrice di correlazione tra le bande per vedere dove far passare gli assi della PCA
 # $map è la mappa finale
 # attr sono gli attributi, quindi la funzione e il pacchetto che abbiamo usato
 
-# Facciamo un summary del modello per sapere quanta variabilità spiega la PCA.
+# Faccio un summary del modello per sapere quanta variabilità spiega la PCA.
 summary(sen_pca$model)
 # Proportion of Variance: componente 1 spiega 67%, la 2 il 32% e la 3 il 0.3%.
 
-# Facciamo un plot per vedere le singole bande. 
+# Faccio un plot per vedere le singole bande. 
 # PC1 spiega gran parte della variabilità.
 plot(sen_pca$map)
 
-# Assegnamo a ogni componente un oggetto 
+# Assegno a ogni componente un oggetto 
 pc1 <- sen_pca$map$PC1
 pc2 <- sen_pca$map$PC2
 pc3 <- sen_pca$map$PC3
 
-# Con ggplot facciamo il plot delle singole componenti, associamo al plot un oggetto
+# Con ggplot faccio il plot delle singole componenti, associamo al plot un oggetto
 g1 <- ggplot() + 
 geom_raster(pc1, mapping=aes(x=x, y=y, fill=PC1))
 
@@ -58,10 +58,10 @@ geom_raster(pc2, mapping=aes(x=x, y=y, fill=PC2))
 g3 <- ggplot() + 
 geom_raster(pc3, mapping=aes(x=x, y=y, fill=PC3))
 
-# Con patchwork sommiamo i plot 
+# Con patchwork sommo i plot 
 g1 + g2 + g3
 
-# Standard deviation of PC1: applichiamo il calcolo della standard deviation all'immagine della PC1 con la funzione focal
+# Standard deviation of PC1: applico il calcolo della standard deviation all'immagine della PC1 con la funzione focal
 sd3 <- focal(pc1, matrix(1/9, 3, 3), fun=sd)
 sd3
 
@@ -129,4 +129,3 @@ geom_raster(sd7, mapping=aes(x=x, y=y, fill=layer)) +
 scale_fill_viridis(option="inferno")
 
 im3 + im4 + im5 
-
