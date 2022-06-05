@@ -12,7 +12,7 @@
 # Le immagini sono a 16 bit 
 
 library(raster)
-library(RStoolbox)
+library(RStoolbox) # For classification
 library(ggplot2)
 library(patchwork)
 library(viridis)
@@ -39,10 +39,16 @@ chile_2013 <- stack(c(import_2013, b10_2013))
 chile_2013
 plot(chile_2013)
 
-# Provo a fare un ggplot: in questo caso ho specificato lo stretch perché altrimenti i plot di ritorno erano troppo scuri
-g1_2013 <- ggRGB(chile_2013, 5, 4, 3, stretch="lin") # NIR in R, red in G, green in B
-g2_2013 <- ggRGB(chile_2013, 4, 5, 3, stretch="lin") # red in R, NIR in G, green in B
+# Ricampiono l'immagine perché le dimensioni rallentano il sistema (ncell almost 60 million)
+c2013_res <- aggregate(chile_2013, fact=10)
+c2013_res
+plot(c2013_res)
+plotRGB(c2013_res, 5, 4, 3, stretch="lin")
 
+# Provo a fare un ggplot: in questo caso ho specificato lo stretch perché altrimenti i plot di ritorno erano troppo scuri
+g1_2013 <- ggRGB(c2013_res, 5, 4, 3, stretch="lin") # NIR in R, red in G, green in B
+g2_2013 <- ggRGB(c2013_res, 4, 5, 3, stretch="lin") # red in R, NIR in G, green in B
+g1_2013 + g2_2013
                                                           # 2021
 # Faccio lo stesso procedimento per importare i dati relativi all'immagine del 2021
 list_2021 <- list.files(pattern="2021_SR_B")
@@ -53,13 +59,16 @@ b10_2021 <- raster("p233r089_2021_ST_B10.tif")
 
 chile_2021 <- stack(c(import_2021, b10_2021))
 chile_2021
-
 plot(chile_2021)
 
-g1_2021 <- ggRGB(chile_2021, 5, 4, 3, stretch="lin") # NIR in R, red in G, green in B
-g2_2021 <- ggRGB(chile_2021, 4, 5, 3, stretch="lin") # red in R, NIR in G, green in B
+# Ricampiono l'immagine (ncell exceeding 63 million)
+c2021_res <- aggregate(chile_2021, fact=10)
+c2021_res
+plot(c2021_res)
+plotRGB(c2021_res, 5, 4, 3, stretch="lin")
 
-
+g1_2021 <- ggRGB(c2021_res, 5, 4, 3, stretch="lin") # NIR in R, red in G, green in B
+g2_2021 <- ggRGB(c2021_res, 4, 5, 3, stretch="lin") # red in R, NIR in G, green in B
 
 # Metto a confronto il plot del 2013 e quello del 2021
 g1_2013 + g1_2021 # Vegetazione è rossa
@@ -75,12 +84,12 @@ g2_2013 + g2_2021 # Vegetazione è verde
 # Riflettanza NIR - Riflettanza RED
 
 # 2013
-dvi_2013 = chile_2013[[5]] - chile_2013[[4]]
+dvi_2013 = c2013_res[[5]] - c2013_res[[4]]
 cl <- colorRampPalette(c("darkblue", "yellow", "red", "black")) (100)
 plot(dvi_2013, col=cl)
 
 # 2021
-dvi_2021 = chile_2021[[5]] - chile_2021[[4]]
+dvi_2021 = c2021_res[[5]] - c2021_res[[4]]
 cl <- colorRampPalette(c("darkblue", "yellow", "red", "black")) (100)
 plot(dvi_2021, col=cl)
 
@@ -92,11 +101,11 @@ plot(dvi_dif, col=cld)
 
 # Calcolo NDVI: (riflettanza NIR - riflettanza RED) / (riflettanza NIR + riflettanza RED)
 # 2013
-ndvi_2013 = dvi_2013 / (chile_2013[[5]] + chile_2013[[4]])
+ndvi_2013 = dvi_2013 / (c2013_res[[5]] + c2013_res[[4]])
 plot(ndvi_2013, col=cl)
 
 #2021
-ndvi_2021 = dvi_2021 / (chile_2021[[5]] + chile_2021[[4]])
+ndvi_2021 = dvi_2021 / (c2021_res[[5]] + c2021_res[[4]])
 plot(ndvi_2021, col=cl)
 
 # Confronto tra i due NDVI
@@ -107,22 +116,87 @@ plot(ndvi_2021, col=cl)
 
                                               ###### CLASSIFICAZIONE ######
 # 2013
-chile_2013_class <- unsuperClass(chile_2013, nClasses=3) # Volevo mettere 4 classi (suolo nudo, vegetazione, ghiaccio, aacqua) ma non si vedono bene
+c2013_class <- unsuperClass(c2013_res, nClasses=3) # Volevo mettere 4 classi (suolo nudo, vegetazione, ghiaccio, aacqua) ma non si vedono bene
 cl <- colorRampPalette(c("yellow", "black", "red"))(100)
-plot(chile_2013_class$map, col=cl)
+plot(c2013_class$map, col=cl)
 
 # 2021
-chile_2021_class <- unsuperClass(chile_2021, nClasses=3) # Volevo mettere 4 classi (suolo nudo, vegetazione, ghiaccio, aacqua) ma non si vedono bene
+c2021_class <- unsuperClass(c2021_res, nClasses=3) # Volevo mettere 4 classi (suolo nudo, vegetazione, ghiaccio, aacqua) ma non si vedono bene
 cl <- colorRampPalette(c("yellow", "black", "red"))(100)
-plot(chile_2021_class$map, col=cl)
+plot(c2021_class$map, col=cl)
+
+# Confronto le due immagini
+par(mfrow=c(2, 2))
+plot(c2013_class$map, col=cl)
+plot(c2021_class$map, col=cl)
+plotRGB(c2013_res, 5, 4, 3, stretch="lin")
+plotRGB(c2021_res, 5, 4, 3, stretch="lin")
 
 
 
+                                              ###### VARIABILITA' ######
+
+nir_2013 <- c2013_res[[5]]
+
+sd3_2013 <- focal(nir_2013, matrix(1/9, 3, 3), fun=sd)
+
+clsd <- colorRampPalette(c('blue','green','pink','magenta','orange','brown','red','yellow'))(100)
+
+plot(sd3_2013, col=clsd)
+
+
+g1 <- ggplot() +
+geom_raster(sd3_2013, mapping = aes(x=x, y=y, fill=layer)) +
+scale_fill_viridis() + 
+ggtitle("Standard deviation by viridis")
 
 
 
+nir_2021 <- c2021_res[[5]]
+
+sd3_2021 <- focal(nir_2021, matrix(1/9, 3, 3), fun=sd)
+
+clsd <- colorRampPalette(c('blue','green','pink','magenta','orange','brown','red','yellow'))(100)
+
+plot(sd3_2021, col=clsd)
+
+
+g2 <- ggplot() +
+geom_raster(sd3_2021, mapping = aes(x=x, y=y, fill=layer)) +
+scale_fill_viridis() + 
+ggtitle("Standard deviation by viridis")
 
 
 
+                                              ###### ANALISI MULTIVARIATA ######
+
+c2013_pca <- rasterPCA(c2013_res)
+c2013_pca 
+summary(c2013_pca$model)
+# La prima componente spiega l'83,8%
+pc1 <- c2013_pca$map$PC1
+pc2 <- c2013_pca$map$PC2
+pc3 <- c2013_pca$map$PC3
+
+g1_pca <- ggplot() + 
+geom_raster(pc1, mapping=aes(x=x, y=y, fill=PC1))
+
+g2_pca <- ggplot() + 
+geom_raster(pc2, mapping=aes(x=x, y=y, fill=PC2))
+
+g3_pca <- ggplot() + 
+geom_raster(pc3, mapping=aes(x=x, y=y, fill=PC3))
+
+g1_pca + g2_pca + g3_pca
+
+sd3_pca <- focal(pc1, matrix(1/9, 3, 3), fun=sd)
+sd3_pca
+
+ggplot() + 
+geom_raster(sd3_pca, mapping=aes(x=x, y=y, fill=layer))
 
 
+ggplot() + 
+geom_raster(sd3_pca, mapping =aes(x=x, y=y, fill=layer)) + 
+scale_fill_viridis() +
+ggtitle("Standard deviation by viridis package")
