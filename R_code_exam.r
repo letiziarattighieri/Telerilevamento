@@ -43,7 +43,6 @@ plot(chile_2013)
 g1_2013 <- ggRGB(chile_2013, 5, 4, 3, stretch="lin") # NIR in R, red in G, green in B
 g2_2013 <- ggRGB(chile_2013, 4, 5, 3, stretch="lin") # red in R, NIR in G, green in B
 
-
                                                           # 2021
 # Faccio lo stesso procedimento per importare i dati relativi all'immagine del 2021
 list_2021 <- list.files(pattern="2021_SR_B")
@@ -104,5 +103,26 @@ plot(ndvi_2021, col=cl)
 par(mfrow=c(1, 2))
 plot(ndvi_2013, col=cl)
 plot(ndvi_2021, col=cl)
+
+
+                                              ###### CLASSIFICAZIONE ######
+# 2013
+chile_2013_class <- unsuperClass(chile_2013, nClasses=3) # Volevo mettere 4 classi (suolo nudo, vegetazione, ghiaccio, aacqua) ma non si vedono bene
+cl <- colorRampPalette(c("yellow", "black", "red"))(100)
+plot(chile_2013_class$map, col=cl)
+
+# 2021
+chile_2021_class <- unsuperClass(chile_2021, nClasses=3) # Volevo mettere 4 classi (suolo nudo, vegetazione, ghiaccio, aacqua) ma non si vedono bene
+cl <- colorRampPalette(c("yellow", "black", "red"))(100)
+plot(chile_2021_class$map, col=cl)
+
+
+
+
+
+
+
+
+
 
 
