@@ -21,7 +21,7 @@ ggRGB(sent, 1, 2, 3, stretch="lin")
 ggRGB(sent, 1, 2, 3)
 # Con ggRGB lo stretch non è obbligatorio, invece va messo per forza con plotRGB
 
-# Mettiamo l'infrarosso nella componente G per vedere come cambia l'immagine
+# Metto l'infrarosso nella componente G per vedere come cambia l'immagine
 ggRGB(sent, 2, 1, 3)
 
 # Exercise: plot the two graphs one beside the other. Possibile grazie a patchwork
@@ -42,7 +42,7 @@ clsd <- colorRampPalette(c('blue','green','pink','magenta','orange','brown','red
 
 plot(sd3, col=clsd)
 
-# Ora plottiamo la stessa immagine con ggplot
+# Ora plotto la stessa immagine con ggplot
 ggplot() +
 geom_raster(sd3, mapping = aes(x=x, y=y, fill=layer)) 
 
@@ -65,6 +65,3 @@ ggtitle("Standard deviation by viridis")
 
 # Exercise: make the same calculation with a 7x7 window
 sd7 <- focal(nir, matrix(1/49, 7, 7), fun=sd)
-
-
-
