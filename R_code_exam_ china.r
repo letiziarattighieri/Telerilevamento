@@ -32,11 +32,9 @@ list_2013 <- list.files(pattern="2013_SR_B")
 # Ora che ho la lista applico, con funzione lapply, la funzione raster per importare tutto
 import_2013 <- lapply(list_2013, raster)
 
-# Prima di mettere insieme tutti i layer con la funzione stack devo importare la banda 10:
-b10_2013 <- raster("p130r038_2013_ST_B10.tif")
 
-# Ora che ho caricato tutte le 8 bande posso procedere con lo stack: 
-china_2013 <- stack(c(import_2013, b10_2013))
+# Ora che ho caricato tutte le 7 bande posso procedere con lo stack: 
+china_2013 <- stack(import_2013)
 china_2013
 plot(china_2013)
 plotRGB(china_2013, 5, 4, 3, stretch="lin")
@@ -61,12 +59,10 @@ list_2021 <- list.files(pattern="2021_SR_B")
 
 import_2021 <- lapply(list_2021, raster)
 
-b10_2021 <- raster("p130r038_2021_ST_B10.tif")
-
-china_2021 <- stack(c(import_2021, b10_2021))
+china_2021 <- stack(import_2021, b10_2021)
 china_2021
 plot(china_2021)
-plorRGB(china_2013, 5, 4, 3, stretch="lin")
+plotRGB(china_2013, 5, 4, 3, stretch="lin")
 
 # Ricampiono l'immagine (ncell: almost 61 million)
 c2021_res <- aggregate(china_2021, fact=10)
@@ -122,23 +118,28 @@ plot(ndvi_2021, col=cl)
 
                                               ###### CLASSIFICAZIONE ######
 # 2013
-c2013_class <- unsuperClass(c2013_res, nClasses=3)
-cl <- colorRampPalette(c("yellow", "black", "red"))(100)
+c2013_class <- unsuperClass(c2013_res, nClasses=4)
+cl <- colorRampPalette(c("yellow", "black", "red", "blue"))(100)
 plot(c2013_class$map, col=cl)
 # class 1: vegetazione
 # class 2: suolo nudo 
 # class 3: ghiaccio
 
 # 2021
-c2021_class <- unsuperClass(c2021_res, nClasses=3) # Volevo mettere 4 classi (suolo nudo, vegetazione, ghiaccio, aacqua) ma non si vedono bene
-cl <- colorRampPalette(c("yellow", "black", "red"))(100)
+c2021_class <- unsuperClass(c2021_res, nClasses=4) # Volevo mettere 4 classi (suolo nudo, vegetazione, ghiaccio, aacqua) ma non si vedono bene
+cl <- colorRampPalette(c("yellow", "black", "red", "blue"))(100)
 plot(c2021_class$map, col=cl)
 # class 1: suolo nudo
 # class 2: ghiaccio
 # class 3: vegetazione
 
-# Confronto le due immagini
-par(mfrow=c(2, 2))
+# Confronto le due immagini classificate
+par(mfrow=c(1, 2))
+plot(c2013_class$map, col=cl)
+plot(c2021_class$map, col=cl)
+
+# Provo a fare un confronto con le immagini classificate e il plotRGB iniziale (NIR in componente R)
+par(mfrow=c(1, 2))
 plot(c2013_class$map, col=cl)
 plot(c2021_class$map, col=cl)
 plotRGB(c2013_res, 5, 4, 3, stretch="lin")
@@ -180,6 +181,9 @@ geom_raster(sd3_2021, mapping = aes(x=x, y=y, fill=layer)) +
 scale_fill_viridis() + 
 ggtitle("Standard deviation by viridis")
 
+g1 + g2 
+# Si riesce ad apprezzare abbastanza bene la differenza tra le due immagini,
+# specialmente nelle zone in cui la variabilità è maggiore, quindi in corrispondenza del ghiaccio e dei crepacci
 
 
                                               ###### ANALISI MULTIVARIATA ######
@@ -192,6 +196,10 @@ pc1 <- c2013_pca$map$PC1
 pc2 <- c2013_pca$map$PC2
 pc3 <- c2013_pca$map$PC3
 
+pc1 <- c2013_pca$map$PC1
+pc5 <- c2013_pca$map$PC5
+pc7 <- c2013_pca$map$PC7
+
 g1_pca <- ggplot() + 
 geom_raster(pc1, mapping=aes(x=x, y=y, fill=PC1))
 
@@ -202,6 +210,23 @@ g3_pca <- ggplot() +
 geom_raster(pc3, mapping=aes(x=x, y=y, fill=PC3))
 
 g1_pca + g2_pca + g3_pca
+
+---------------------
+
+g1_pca <- ggplot() + 
+geom_raster(pc1, mapping=aes(x=x, y=y, fill=PC1))
+
+g5_pca <- ggplot() + 
+geom_raster(pc5, mapping=aes(x=x, y=y, fill=PC5))
+
+g7_pca <- ggplot() + 
+geom_raster(pc7, mapping=aes(x=x, y=y, fill=PC7))
+
+g1_pca + g5_pca + g7_pca
+
+
+
+
 
 sd3_pca <- focal(pc1, matrix(1/9, 3, 3), fun=sd)
 sd3_pca
