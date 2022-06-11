@@ -13,9 +13,9 @@
 # Le immagini sono a 16 bit 
 
 library(raster)
-library(RStoolbox) # For classification
-library(ggplot2)
-library(patchwork)
+library(RStoolbox) # For image viewing and variability calculation
+library(ggplot2) # For ggplot plotting
+library(patchwork) # Multiframe with ggplot
 library(viridis)
 
 setwd("C:/lab/china_exam/")
@@ -24,31 +24,39 @@ setwd("C:/lab/china_exam/")
                                               ###### IMPORTAZIONE DATI ######
 
 # 2013
-# Importo le bande relative dell'immagine del 2013 facendo una lista perché sono 8 bande separate
-# Devo importare le prime 7 bande e la banda 10 che però ha un nome diverso: 
-# quindi, per evitare di importarle singolarmente creo una lista per importare le prime  7 bande 
+# Importo le bande relative dell'immagine del 2013 facendo una lista perché ho scaricato le 7 bande separatamente; 
+# quindi, per evitare di importarle singolarmente, creo una lista
 list_2013 <- list.files(pattern="2013_SR_B")
 
 # Ora che ho la lista applico, con funzione lapply, la funzione raster per importare tutto
 import_2013 <- lapply(list_2013, raster)
 
-
-# Ora che ho caricato tutte le 7 bande posso procedere con lo stack: 
+# Ora che ho caricato tutte le 7 bande posso procedere con lo stack (creo un blocco comune con tutti i dati che ho importato): 
 china_2013 <- stack(import_2013)
 china_2013
+
+# Faccio un plot delle bande che ho importato e unito con lo stack
 plot(china_2013)
+
+# Per vedere l'immagine con schema RGB creo un plotRGB con:
+# banda NIR nella componente R, banda RED in componente G, banda GREEN in componente B
 plotRGB(china_2013, 5, 4, 3, stretch="lin")
-# In questo plot sono evidenti i ghiacciai, la vegetazione che appare rossa e le strade (particolarmente evidente la città di Chengdu)
+
+# In questo plot sono evidenti i ghiacciai, la vegetazione che appare rossa e le strade 
+# particolarmente evidente la città di Chengdu in basso a destra
 
 # Ricampiono l'immagine perché le dimensioni rallentano il sistema (ncell: more than 61 million)
 c2013_res <- aggregate(china_2013, fact=10)
 c2013_res
+
 plot(c2013_res)
+
 plotRGB(c2013_res, 5, 4, 3, stretch="lin")
 
-# Provo a fare un ggplot: in questo caso ho specificato lo stretch perché altrimenti i plot di ritorno erano troppo scuri
+# Provo a fare un ggplot: in questo caso ho specificato lo stretch perché altrimenti i plot di ritorno sono troppo scuri
 g1_2013 <- ggRGB(c2013_res, 5, 4, 3, stretch="lin") # NIR in R, red in G, green in B
 g2_2013 <- ggRGB(c2013_res, 4, 5, 3, stretch="lin") # red in R, NIR in G, green in B
+
 g1_2013 + g2_2013
 # Userò solo il ggplot con NIR in RED perché quando è in GREEN non si distingue il suolo nudo
 
@@ -59,21 +67,24 @@ list_2021 <- list.files(pattern="2021_SR_B")
 
 import_2021 <- lapply(list_2021, raster)
 
-china_2021 <- stack(import_2021, b10_2021)
+china_2021 <- stack(import_2021)
 china_2021
+
 plot(china_2021)
+
 plotRGB(china_2013, 5, 4, 3, stretch="lin")
 
 # Ricampiono l'immagine (ncell: almost 61 million)
 c2021_res <- aggregate(china_2021, fact=10)
 c2021_res
+
 plot(c2021_res)
+
 plotRGB(c2021_res, 5, 4, 3, stretch="lin")
 
 g1_2021 <- ggRGB(c2021_res, 5, 4, 3, stretch="lin") # NIR in R, red in G, green in B
 g2_2021 <- ggRGB(c2021_res, 4, 5, 3, stretch="lin") # red in R, NIR in G, green in B
 # Per lo stesso motivo userò solo il ggplot con NIR in RED
-
 
 # Metto a confronto il plot del 2013 e quello del 2021
 g1_2013 + g1_2021 # Vegetazione è rossa
@@ -87,21 +98,32 @@ g1_2013 + g1_2021 # Vegetazione è rossa
 
 # 2013
 dvi_2013 = c2013_res[[5]] - c2013_res[[4]]
+dvi_2013 # values: -7619.07, 13533.58  (min, max)
+
 cl <- colorRampPalette(c("darkblue", "yellow", "red", "black")) (100)
+
 plot(dvi_2013, col=cl)
+# Tutto quello che è giallo dovrebbe essere suolo nudo
 
 # 2021
 dvi_2021 = c2021_res[[5]] - c2021_res[[4]]
+dvi_2021 # values: -9640.029, 13171.99  (min, max)
+
 cl <- colorRampPalette(c("darkblue", "yellow", "red", "black")) (100)
+
 plot(dvi_2021, col=cl)
 
 # Differenza 2013 - 2021
 dvi_dif = dvi_2013 - dvi_2021
 cld <- colorRampPalette(c("blue", "white", "red")) (100)
 plot(dvi_dif, col=cld) 
-# Le zone rosse corrispondono alle zone fortemente soggette a deforestazione, alta variazione della salute delle piante.
+# Le zone rosse corrispondono alle zone soggette a deforestazione o alla scomparsa, in generale, di vegetazione
+
 
 # Calcolo NDVI: (riflettanza NIR - riflettanza RED) / (riflettanza NIR + riflettanza RED)
+    # Range DVI (immagine a 16 bit) : -65535 a 65535
+    # Range NDVI (immagine a 16 bit) : -1 a 1
+
 # 2013
 ndvi_2013 = dvi_2013 / (c2013_res[[5]] + c2013_res[[4]])
 plot(ndvi_2013, col=cl)
@@ -110,40 +132,77 @@ plot(ndvi_2013, col=cl)
 ndvi_2021 = dvi_2021 / (c2021_res[[5]] + c2021_res[[4]])
 plot(ndvi_2021, col=cl)
 
-# Confronto tra i due NDVI
+# Confronto tra i due NDVI creando un multiframe
 par(mfrow=c(1, 2))
 plot(ndvi_2013, col=cl)
 plot(ndvi_2021, col=cl)
+# Particolarmente evidenti le strade che vanno da Chengdu verso la montagna, in giallo
 
 
                                               ###### CLASSIFICAZIONE ######
+
+# Faccio la classificazione in base alla disposizione dei pixel nello spazio a 3 bande
+# Ho deciso di suddividere i pixel in 4 classi: suolo nudo, vegetazione, ghiaccio
+
 # 2013
-c2013_class <- unsuperClass(c2013_res, nClasses=4)
-cl <- colorRampPalette(c("yellow", "black", "red", "blue"))(100)
-plot(c2013_class$map, col=cl)
+c2013_class <- unsuperClass(c2013_res, nClasses=3)
+clc <- colorRampPalette(c("yellow", "red", "black"))(100)
+plot(c2013_class$map, col=clc)
 # class 1: vegetazione
 # class 2: suolo nudo 
 # class 3: ghiaccio
 
 # 2021
-c2021_class <- unsuperClass(c2021_res, nClasses=4) # Volevo mettere 4 classi (suolo nudo, vegetazione, ghiaccio, aacqua) ma non si vedono bene
-cl <- colorRampPalette(c("yellow", "black", "red", "blue"))(100)
-plot(c2021_class$map, col=cl)
+c2021_class <- unsuperClass(c2021_res, nClasses=3) # Volevo mettere 4 classi (suolo nudo, vegetazione, ghiaccio, aacqua) ma non si vedono bene
+clc <- colorRampPalette(c("yellow", "red", "black"))(100)
+plot(c2021_class$map, col=clc)
 # class 1: suolo nudo
 # class 2: ghiaccio
 # class 3: vegetazione
 
 # Confronto le due immagini classificate
 par(mfrow=c(1, 2))
-plot(c2013_class$map, col=cl)
-plot(c2021_class$map, col=cl)
+plot(c2013_class$map, col=clc)
+plot(c2021_class$map, col=clc)
 
 # Provo a fare un confronto con le immagini classificate e il plotRGB iniziale (NIR in componente R)
 par(mfrow=c(1, 2))
-plot(c2013_class$map, col=cl)
-plot(c2021_class$map, col=cl)
+plot(c2013_class$map, col=clc)
+plot(c2021_class$map, col=clc)
 plotRGB(c2013_res, 5, 4, 3, stretch="lin")
 plotRGB(c2021_res, 5, 4, 3, stretch="lin")
+
+
+                                              ###### LAND COVER ######
+
+# Voglio vedere com'è cambiato il suolo in un intervallo di 8 anni
+c2013_class <- unsuperClass(c2013_res, nClasses=3)
+plot(c2013_class$map, col=clc)
+
+c2021_class <- unsuperClass(c2021_res, nClasses=3)
+plot(c2021_class$map, col=clc)
+ 
+
+# Frequenze 
+freq(c2013_class$map)
+# value  count
+# classe 1: 212623
+# classe 2: 169255
+# classe 3:  23779
+#       NA: 205818
+
+freq(c2021_class$map)
+#value  count
+# classe 1:  41861
+# classe 2:  18286
+# classe 3: 345431
+#       NA: 205122
+
+
+
+
+
+
 
 
 
