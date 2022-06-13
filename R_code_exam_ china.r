@@ -112,6 +112,7 @@ dvi_2021 # values: -9640.029, 13171.99  (min, max)
 cl <- colorRampPalette(c("darkblue", "yellow", "red", "black")) (100)
 
 plot(dvi_2021, col=cl)
+# Tutto quello che è arancio dovrebbe essere suolo nudo
 
 # Differenza 2013 - 2021
 dvi_dif = dvi_2013 - dvi_2021
@@ -146,15 +147,15 @@ plot(ndvi_2021, col=cl)
 
 # 2013
 c2013_class <- unsuperClass(c2013_res, nClasses=3)
-clc <- colorRampPalette(c("yellow", "red", "black"))(100)
+clc <- colorRampPalette(c("yellow2", "red1", "navyblue"))(100)
 plot(c2013_class$map, col=clc)
 # class 1: vegetazione
 # class 2: suolo nudo 
 # class 3: ghiaccio
 
 # 2021
-c2021_class <- unsuperClass(c2021_res, nClasses=3) # Volevo mettere 4 classi (suolo nudo, vegetazione, ghiaccio, aacqua) ma non si vedono bene
-clc <- colorRampPalette(c("yellow", "red", "black"))(100)
+c2021_class <- unsuperClass(c2021_res, nClasses=3) 
+clc <- colorRampPalette(c("yellow2", "red1", "navyblue"))(100)
 plot(c2021_class$map, col=clc)
 # class 1: suolo nudo
 # class 2: ghiaccio
@@ -166,7 +167,7 @@ plot(c2013_class$map, col=clc)
 plot(c2021_class$map, col=clc)
 
 # Provo a fare un confronto con le immagini classificate e il plotRGB iniziale (NIR in componente R)
-par(mfrow=c(1, 2))
+par(mfrow=c(2, 2))
 plot(c2013_class$map, col=clc)
 plot(c2021_class$map, col=clc)
 plotRGB(c2013_res, 5, 4, 3, stretch="lin")
@@ -223,9 +224,9 @@ g1 <- ggplot() +
 geom_raster(sd3_2013, mapping = aes(x=x, y=y, fill=layer)) +
 scale_fill_viridis() + 
 ggtitle("Standard deviation by viridis")
+# Massima variabilità al limite tra ghiaccio e suolo (in giallo)
 
-
-
+#2021
 nir_2021 <- c2021_res[[5]]
 
 sd3_2021 <- focal(nir_2021, matrix(1/9, 3, 3), fun=sd)
@@ -239,10 +240,13 @@ g2 <- ggplot() +
 geom_raster(sd3_2021, mapping = aes(x=x, y=y, fill=layer)) +
 scale_fill_viridis() + 
 ggtitle("Standard deviation by viridis")
+# Massima variabilità al limite tra ghiaccio e suolo (giallo)
 
 g1 + g2 
-# Si riesce ad apprezzare abbastanza bene la differenza tra le due immagini,
+# Si riesce ad apprezzare abbastanza bene la differenza tra le due immagini sebbene abbia usato le immagini ricampionate,
 # specialmente nelle zone in cui la variabilità è maggiore, quindi in corrispondenza del ghiaccio e dei crepacci
+# Se si presta abbastanza attenzione si riescono a intravedere anche le strade che portano da Chengdu alle montagne
+
 
 
                                               ###### ANALISI MULTIVARIATA ######
@@ -250,38 +254,51 @@ g1 + g2
 c2013_pca <- rasterPCA(c2013_res)
 c2013_pca 
 summary(c2013_pca$model)
-# La prima componente spiega l'83,8%
-pc1 <- c2013_pca$map$PC1
-pc2 <- c2013_pca$map$PC2
-pc3 <- c2013_pca$map$PC3
+# La prima componente spiega l'85.3%
+plot(c2013_pca$map)
+
+pc1_2013 <- c2013_pca$map$PC1
+pc2_2013 <- c2013_pca$map$PC2
+pc3_2013 <- c2013_pca$map$PC3
 
 pc1 <- c2013_pca$map$PC1
-pc5 <- c2013_pca$map$PC5
-pc7 <- c2013_pca$map$PC7
+pc5_2013 <- c2013_pca$map$PC5
+pc7_2013 <- c2013_pca$map$PC7
 
-g1_pca <- ggplot() + 
-geom_raster(pc1, mapping=aes(x=x, y=y, fill=PC1))
+g1_pca_2013 <- ggplot() + 
+geom_raster(pc1_2013, mapping=aes(x=x, y=y, fill=PC1))
 
-g2_pca <- ggplot() + 
-geom_raster(pc2, mapping=aes(x=x, y=y, fill=PC2))
+g2_pca_2013 <- ggplot() + 
+geom_raster(pc2_2013, mapping=aes(x=x, y=y, fill=PC2))
 
-g3_pca <- ggplot() + 
-geom_raster(pc3, mapping=aes(x=x, y=y, fill=PC3))
+g3_pca_2013 <- ggplot() + 
+geom_raster(pc3_2013, mapping=aes(x=x, y=y, fill=PC3))
 
-g1_pca + g2_pca + g3_pca
+g1_pca_2013 + g2_pca_2013 + g3_pca_2013
 
----------------------
 
-g1_pca <- ggplot() + 
-geom_raster(pc1, mapping=aes(x=x, y=y, fill=PC1))
+sd_2013 <- focal(pc1_2013, matrix(1/9, 3, 3), fun=sd)
 
-g5_pca <- ggplot() + 
-geom_raster(pc5, mapping=aes(x=x, y=y, fill=PC5))
+ggplot() + 
+geom_raster(sd_2013, mapping =aes(x=x, y=y, fill=layer)) + 
+scale_fill_viridis() +
+ggtitle("Standard deviation by viridis package")
 
-g7_pca <- ggplot() + 
-geom_raster(pc7, mapping=aes(x=x, y=y, fill=PC7))
+g1_2013 <- ggRGB(c2013_res, 5, 4, 3, stretch="lin")
 
-g1_pca + g5_pca + g7_pca
+im2 <- ggplot() + 
+geom_raster(pc1_2013, mapping=aes(x=x, y=y, fill=PC1))
+
+im3 <- ggplot() +
+geom_raster(sd_2013, mapping=aes(x=x, y=y, fill=layer)) +
+scale_fill_viridis(option="inferno")
+
+g1_2013 + im2 + im3
+
+
+
+
+
 
 
 
@@ -298,8 +315,3 @@ ggplot() +
 geom_raster(sd3_pca, mapping =aes(x=x, y=y, fill=layer)) + 
 scale_fill_viridis() +
 ggtitle("Standard deviation by viridis package")
-© 2022 GitHub, Inc.
-Terms
-Privacy
-Security
-Sta
