@@ -13,10 +13,10 @@
 # Le immagini sono a 16 bit 
 
 library(raster)
-library(RStoolbox) # For image viewing and variability calculation
-library(ggplot2) # For ggplot plotting
-library(patchwork) # Multiframe with ggplot
-library(viridis)
+library(RStoolbox) # Per visualizzare le immagini e calcoli
+library(ggplot2) # Per i plot ggplot
+library(patchwork) # Per creare multiframe con ggplot
+library(viridis) 
 
 setwd("C:/lab/china_exam/")
 
@@ -25,13 +25,13 @@ setwd("C:/lab/china_exam/")
 
 # 2013
 # Importo le bande relative dell'immagine del 2013 facendo una lista perché ho scaricato le 7 bande separatamente; 
-# quindi, per evitare di importarle singolarmente, creo una lista
+# quindi, per evitare di importarle singolarmente, creo una lista con funzione list.files
 list_2013 <- list.files(pattern="2013_SR_B")
 
 # Ora che ho la lista applico, con funzione lapply, la funzione raster per importare tutto
 import_2013 <- lapply(list_2013, raster)
 
-# Ora che ho caricato tutte le 7 bande posso procedere con lo stack (creo un blocco comune con tutti i dati che ho importato): 
+# Ora che ho importato le 7 bande posso procedere con lo stack (creo un blocco comune con tutti i dati che ho importato): 
 china_2013 <- stack(import_2013)
 china_2013
 
@@ -39,18 +39,18 @@ china_2013
 plot(china_2013)
 
 # Per vedere l'immagine con schema RGB creo un plotRGB con:
-# banda NIR nella componente R, banda RED in componente G, banda GREEN in componente B
+# banda NIR nella componente R, banda R in componente G, banda G in componente B
 plotRGB(china_2013, 5, 4, 3, stretch="lin")
 
-# In questo plot sono evidenti i ghiacciai, la vegetazione che appare rossa e le strade 
+# In questo plot sono evidenti i ghiacciai, la vegetazione che appare rossa e le strade:
 # particolarmente evidente la città di Chengdu in basso a destra
 
 # Ricampiono l'immagine perché le dimensioni rallentano il sistema (ncell: more than 61 million)
 c2013_res <- aggregate(china_2013, fact=10)
 c2013_res
 
+# Rifaccio il plot delle bande e il plotRGB per verificare che il ricampionamento sia andato a buon fine
 plot(c2013_res)
-
 plotRGB(c2013_res, 5, 4, 3, stretch="lin")
 
 # Provo a fare un ggplot: in questo caso ho specificato lo stretch perché altrimenti i plot di ritorno sono troppo scuri
@@ -101,18 +101,21 @@ dvi_2013 = c2013_res[[5]] - c2013_res[[4]]
 dvi_2013 # values: -7619.07, 13533.58  (min, max)
 
 cl <- colorRampPalette(c("darkblue", "yellow", "red", "black")) (100)
-
 plot(dvi_2013, col=cl)
 # Tutto quello che è giallo dovrebbe essere suolo nudo
+
 
 # 2021
 dvi_2021 = c2021_res[[5]] - c2021_res[[4]]
 dvi_2021 # values: -9640.029, 13171.99  (min, max)
 
 cl <- colorRampPalette(c("darkblue", "yellow", "red", "black")) (100)
-
 plot(dvi_2021, col=cl)
 # Tutto quello che è arancio dovrebbe essere suolo nudo
+
+par(mfrow=c(1, 2))
+plot(dvi_2013, col=cl)
+plot(dvi_2021, col=cl)
 
 # Differenza 2013 - 2021
 dvi_dif = dvi_2013 - dvi_2021
@@ -199,9 +202,14 @@ freq(c2021_class$map)
 # classe 3: 345431
 #       NA: 205122
 
+#TIME SERIES 
+#Faccio la differenza tra la banda NIR del 2021 e quella del 2013
+dif <- c2021_res[[5]] - c2013_res[[5]]
+dif
+cldif <- colorRampPalette(c("blue", "white", "red"))(100)
+plot(dif, col=cldif)
 
-
-
+# In blu scuro si vede il ghiaccio presente nel 2013 ma mancante nel 2021, al contrario, in rosso, si vede il ghiaccio presente nel 2021 e che mancava nel 2013
 
 
 
