@@ -93,6 +93,8 @@ g1_2013 + g1_2021 # Vegetazione è rossa
 
                                               ###### INDICI SPETTRALI ######
 
+# Parto con il calcolo degli indici spettrali per vedere le condizioni della vegetazione.
+# Le foglie assorbono il rosso e riflettono NIR, se la pianta va in sofferenza riflette meno NIR e assorbe meno rosso: 
 # Calcolo DVI, calcolo prima Difference Vegetation Index perché le due immagini hanno la stessa risoluzione
 # Riflettanza NIR - Riflettanza RED
 
@@ -102,7 +104,7 @@ dvi_2013 # values: -7619.07, 13533.58  (min, max)
 
 cl <- colorRampPalette(c("darkblue", "yellow", "red", "black")) (100)
 plot(dvi_2013, col=cl)
-# Tutto quello che è giallo dovrebbe essere suolo nudo
+# Tutto quello che è giallo dovrebbe essere suolo nudo, si vedono bene le strade
 
 
 # 2021
@@ -111,7 +113,7 @@ dvi_2021 # values: -9640.029, 13171.99  (min, max)
 
 cl <- colorRampPalette(c("darkblue", "yellow", "red", "black")) (100)
 plot(dvi_2021, col=cl)
-# Tutto quello che è arancio dovrebbe essere suolo nudo
+# Tutto quello che è arancio dovrebbe essere suolo nudo, anche qua si vedono bene le strade
 
 par(mfrow=c(1, 2))
 plot(dvi_2013, col=cl)
@@ -143,22 +145,49 @@ plot(ndvi_2021, col=cl)
 # Particolarmente evidenti le strade che vanno da Chengdu verso la montagna, in giallo
 
 
+                                              ###### TIME SERIES ######
+
+# Voglio provare a confrontare la situazione ghiacciai nei due anni:
+# Faccio la differenza tra la banda NIR del 2021 e quella del 2013
+# Ho scelto la banda NIR perché con le altre non si apprezzava la differenza
+
+dif <- c2021_res[[5]] - c2013_res[[5]]
+dif
+
+cldif <- colorRampPalette(c("blue", "white", "red"))(100)
+plot(dif, col=cldif)
+# In blu scuro si vede il ghiaccio presente nel 2013 ma assente nel 2021,
+# al contrario, in rosso, si vede il ghiaccio presente nel 2021 e che non si era ancora formato nel 2013
+
+
                                               ###### CLASSIFICAZIONE ######
 
 # Faccio la classificazione in base alla disposizione dei pixel nello spazio a 3 bande
 # Ho deciso di suddividere i pixel in 4 classi: suolo nudo, vegetazione, ghiaccio
 
 # 2013
-c2013_class <- unsuperClass(c2013_res, nClasses=3)
-clc <- colorRampPalette(c("yellow2", "red1", "navyblue"))(100)
+c2013_class <- unsuperClass(c2013_res, nClasses=4)
+clc <- colorRampPalette(c("yellow", "red", "blue", "black"))(100)
 plot(c2013_class$map, col=clc)
-# class 1: vegetazione
+# class 1: ghiaccio
 # class 2: suolo nudo 
-# class 3: ghiaccio
+# class 3: vegetazione
+
+# pdf("c2013_class.pdf")
+# plot(c2013_class$map, col=clc) 
+# dev.off()
+
+#pdf("c2013_class.pdf")
+#plot(c2013_class$map, col=clc)
+#dev.off()
+
+#pdf("c2021_class.pdf")
+#plot(c2021_class$map, col=clc)
+#dev.off()
 
 # 2021
-c2021_class <- unsuperClass(c2021_res, nClasses=3) 
-clc <- colorRampPalette(c("yellow2", "red1", "navyblue"))(100)
+c2021_class <- unsuperClass(c2021_res, nClasses=4)
+clc <- colorRampPalette(c("yellow", "red", "blue", "black"))(100)
 plot(c2021_class$map, col=clc)
 # class 1: suolo nudo
 # class 2: ghiaccio
@@ -190,29 +219,19 @@ plot(c2021_class$map, col=clc)
 # Frequenze 
 freq(c2013_class$map)
 # value  count
-# classe 1: 212623
-# classe 2: 169255
-# classe 3:  23779
+# classe 1: 169553 vegetazione
+# classe 2: 211740 suolo
+# classe 3: 24364 ghiaccio  
 #       NA: 205818
 
 freq(c2021_class$map)
 #value  count
-# classe 1:  41861
-# classe 2:  18286
-# classe 3: 345431
+# classe 1: 176290 vegetazione
+# classe 2: 182054 suolo
+# classe 3: 32641 transizione suolo ghiaccio, considerato ghiaccio
+# classe 4: 14593 ghiaccio
 #       NA: 205122
-
-#TIME SERIES 
-#Faccio la differenza tra la banda NIR del 2021 e quella del 2013
-dif <- c2021_res[[5]] - c2013_res[[5]]
-dif
-cldif <- colorRampPalette(c("blue", "white", "red"))(100)
-plot(dif, col=cldif)
-
-# In blu scuro si vede il ghiaccio presente nel 2013 ma mancante nel 2021, al contrario, in rosso, si vede il ghiaccio presente nel 2021 e che mancava nel 2013
-
-
-
+ 
 
 
                                               ###### VARIABILITA' ######
