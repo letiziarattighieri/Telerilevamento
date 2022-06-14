@@ -11,6 +11,7 @@
   # B5 = NIR
 
 # Le immagini sono a 16 bit 
+# Ho spostato a fine codice, come commenti, l'importazione dei plot in pdf da inserire nella presentazione
 
 library(raster)
 library(RStoolbox) # Per visualizzare le immagini e calcoli
@@ -55,9 +56,7 @@ plotRGB(c2013_res, 5, 4, 3, stretch="lin")
 
 # Provo a fare un ggplot: in questo caso ho specificato lo stretch perché altrimenti i plot di ritorno sono troppo scuri
 g1_2013 <- ggRGB(c2013_res, 5, 4, 3, stretch="lin") # NIR in R, red in G, green in B
-g2_2013 <- ggRGB(c2013_res, 4, 5, 3, stretch="lin") # red in R, NIR in G, green in B
-
-g1_2013 + g2_2013
+g1_2013
 # Userò solo il ggplot con NIR in RED perché quando è in GREEN non si distingue il suolo nudo
 
 
@@ -83,7 +82,6 @@ plot(c2021_res)
 plotRGB(c2021_res, 5, 4, 3, stretch="lin")
 
 g1_2021 <- ggRGB(c2021_res, 5, 4, 3, stretch="lin") # NIR in R, red in G, green in B
-g2_2021 <- ggRGB(c2021_res, 4, 5, 3, stretch="lin") # red in R, NIR in G, green in B
 # Per lo stesso motivo userò solo il ggplot con NIR in RED
 
 # Metto a confronto il plot del 2013 e quello del 2021
@@ -150,7 +148,6 @@ plot(ndvi_2021, col=cl)
 # Voglio provare a confrontare la situazione ghiacciai nei due anni:
 # Faccio la differenza tra la banda NIR del 2021 e quella del 2013
 # Ho scelto la banda NIR perché con le altre non si apprezzava la differenza
-
 dif <- c2021_res[[5]] - c2013_res[[5]]
 dif
 
@@ -160,43 +157,7 @@ plot(dif, col=cldif)
 # al contrario, in rosso, si vede il ghiaccio presente nel 2021 e che non si era ancora formato nel 2013
 
 
-                                              ###### CLASSIFICAZIONE ######
 
-# Faccio la classificazione in base alla disposizione dei pixel nello spazio a 3 bande
-# Ho deciso di suddividere i pixel in 4 classi: suolo nudo, vegetazione, ghiaccio
-
-# 2013
-c2013_class <- unsuperClass(c2013_res, nClasses=4)
-clc <- colorRampPalette(c("yellow", "red", "blue", "black"))(100)
-plot(c2013_class$map, col=clc)
-# class 1: ghiaccio
-# class 2: suolo nudo 
-# class 3: vegetazione
-
-# pdf("c2013_class.pdf")
-# plot(c2013_class$map, col=clc) 
-# dev.off()
-
-#pdf("c2013_class.pdf")
-#plot(c2013_class$map, col=clc)
-#dev.off()
-
-#pdf("c2021_class.pdf")
-#plot(c2021_class$map, col=clc)
-#dev.off()
-
-# 2021
-c2021_class <- unsuperClass(c2021_res, nClasses=4)
-clc <- colorRampPalette(c("yellow", "red", "blue", "black"))(100)
-plot(c2021_class$map, col=clc)
-# class 1: suolo nudo
-# class 2: ghiaccio
-# class 3: vegetazione
-
-# Confronto le due immagini classificate
-par(mfrow=c(1, 2))
-plot(c2013_class$map, col=clc)
-plot(c2021_class$map, col=clc)
 
 # Provo a fare un confronto con le immagini classificate e il plotRGB iniziale (NIR in componente R)
 par(mfrow=c(2, 2))
@@ -209,34 +170,50 @@ plotRGB(c2021_res, 5, 4, 3, stretch="lin")
                                               ###### LAND COVER ######
 
 # Voglio vedere com'è cambiato il suolo in un intervallo di 8 anni
-c2013_class <- unsuperClass(c2013_res, nClasses=3)
+# Faccio la classificazione in base alla disposizione dei pixel nello spazio a 3 bande
+# Suddivido i pixel in 4 classi: suolo nudo, vegetazione, ghiaccio e transizione tra ghiaccio e suolo
+# E' stato necessario suddividere in 4 classi perché provando con 3 veniva a mancare una parte consistende del suolo nudo nel plot 2021
+
+# 2013
+c2013_class <- unsuperClass(c2013_res, nClasses=4)
+clc <- colorRampPalette(c("yellow", "red", "blue", "black"))(100)
 plot(c2013_class$map, col=clc)
 
-c2021_class <- unsuperClass(c2021_res, nClasses=3)
+# 2021
+c2021_class <- unsuperClass(c2021_res, nClasses=4)
+clc <- colorRampPalette(c("yellow", "red", "blue", "black"))(100)
 plot(c2021_class$map, col=clc)
  
+# Confronto le due immagini classificate
+par(mfrow=c(1, 2))
+plot(c2013_class$map, col=clc)
+plot(c2021_class$map, col=clc)
 
 # Frequenze 
 freq(c2013_class$map)
 # value  count
-# classe 1: 169553 vegetazione
-# classe 2: 211740 suolo
-# classe 3: 24364 ghiaccio  
-#       NA: 205818
+# classe 1: 169553 
+# classe 2: 211740 
+# classe 3: 24364 
+# classe 4: 
+#       NA: 205818 (suppongo i pixel bianchi dovuti all'inclinazione dell'immagine satellitare, per questo non li considero nel grafico)
 
 freq(c2021_class$map)
 #value  count
-# classe 1: 176290 vegetazione
-# classe 2: 182054 suolo
-# classe 3: 32641 transizione suolo ghiaccio, considerato ghiaccio
-# classe 4: 14593 ghiaccio
-#       NA: 205122
+# classe 1: 176290 
+# classe 2: 182054 
+# classe 3: 32641 
+# classe 4: 14593 
+#       NA: 205122 (suppongo i pixel bianchi dovuti all'inclinazione dell'immagine satellitare, per questo non li considero nel grafico)
  
+
+# devo fare l'istogramma con le frequenze 
 
 
                                               ###### VARIABILITA' ######
 
 # Calcolo la variabilità su NIR (banda 5)
+
 # 2013 
 nir_2013 <- c2013_res[[5]]
 
@@ -245,7 +222,6 @@ sd3_2013 <- focal(nir_2013, matrix(1/9, 3, 3), fun=sd)
 clsd <- colorRampPalette(c('blue','green','pink','magenta','orange','brown','red','yellow'))(100)
 
 plot(sd3_2013, col=clsd)
-
 
 g1 <- ggplot() +
 geom_raster(sd3_2013, mapping = aes(x=x, y=y, fill=layer)) +
@@ -261,7 +237,6 @@ sd3_2021 <- focal(nir_2021, matrix(1/9, 3, 3), fun=sd)
 clsd <- colorRampPalette(c('blue','green','pink','magenta','orange','brown','red','yellow'))(100)
 
 plot(sd3_2021, col=clsd)
-
 
 g2 <- ggplot() +
 geom_raster(sd3_2021, mapping = aes(x=x, y=y, fill=layer)) +
@@ -342,3 +317,59 @@ ggplot() +
 geom_raster(sd3_pca, mapping =aes(x=x, y=y, fill=layer)) + 
 scale_fill_viridis() +
 ggtitle("Standard deviation by viridis package")
+
+
+# Salvo in pdf i plot per metterli nella presentazione
+#2013 
+# bande          # pdf("c2013_res_bands.pdf")
+                 # plot(c2013_res) 
+                 # dev.off()
+
+# plotRGB        # pdf("c2013_res_plotRGB.pdf")    
+                 # plotRGB(c2021_res, 5, 4, 3, stretch="lin")
+                 # dev.off()
+
+# ggRGB          # pdf("c2013_res_ggRGB.pdf")
+                 # ggRGB(c2013_res, 5, 4, 3, stretch="lin") 
+                 # dev.off()
+
+# dvi            # pdf("dvi_2013.pdf")
+                 # plot(dvi_2013, col=cl)
+                 # dev.off()
+
+# dvi_difference # pdf("dvi_dif.pdf")
+                 # plot(dvi_dif, col=cld) 
+                 # dev.off()
+
+# ndvi_2013      # pdf("ndvi_2013.pdf")
+                 # plot(ndvi_2013, col=cl)
+                 # dev.off()
+
+# NIR2021-2013   # pdf("diff_nir2021-2013.pdf")
+                 # plot(dif, col=cldif)
+                 # dev.off()
+
+# classi 
+
+#2021 
+# bande          # pdf("c2021_res_bands.pdf")
+                 # plot(c2021_res) 
+                 # dev.off()
+
+# plotRGB        # pdf("c2021_res_plotRGB.pdf")
+                 # plotRGB(c2021_res, 5, 4, 3, stretch="lin")
+                 # dev.off()
+
+# ggRGB          # pdf("c2021_res_ggRGB.pdf")
+                 # ggRGB(c2021_res, 5, 4, 3, stretch="lin") 
+                 # dev.off()
+
+# dvi            # pdf("dvi_2021.pdf")
+                 # plot(dvi_2021, col=cl)
+                 # dev.off()
+
+# ndvi_2021      # pdf("ndvi_2021.pdf")
+                 # plot(ndvi_2021, col=cl)
+                 # dev.off()
+
+# classi
