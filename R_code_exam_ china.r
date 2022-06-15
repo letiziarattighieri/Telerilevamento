@@ -157,21 +157,11 @@ plot(dif, col=cldif)
 # al contrario, in rosso, si vede il ghiaccio presente nel 2021 e che non si era ancora formato nel 2013
 
 
-
-
-# Provo a fare un confronto con le immagini classificate e il plotRGB iniziale (NIR in componente R)
-par(mfrow=c(2, 2))
-plot(c2013_class$map, col=clc)
-plot(c2021_class$map, col=clc)
-plotRGB(c2013_res, 5, 4, 3, stretch="lin")
-plotRGB(c2021_res, 5, 4, 3, stretch="lin")
-
-
                                               ###### LAND COVER ######
 
 # Voglio vedere com'è cambiato il suolo in un intervallo di 8 anni
 # Faccio la classificazione in base alla disposizione dei pixel nello spazio a 3 bande
-# Suddivido i pixel in 4 classi: suolo nudo, vegetazione, ghiaccio e transizione tra ghiaccio e suolo
+# Suddivido i pixel in 4 classi: suolo nudo, vegetazione, neve e transizione tra neve e suolo
 # E' stato necessario suddividere in 4 classi perché provando con 3 veniva a mancare una parte consistende del suolo nudo nel plot 2021
 
 # 2013
@@ -191,26 +181,55 @@ plot(c2021_class$map, col=clc)
 
 # Frequenze 
 freq(c2013_class$map)
-# value  count
-# classe 1: 169553 
-# classe 2: 211740 
-# classe 3: 24364 
-# classe 4: 
-#       NA: 205818 (suppongo i pixel bianchi dovuti all'inclinazione dell'immagine satellitare, per questo non li considero nel grafico)
+# value     count
+# classe 1: 25566 (zona transizione suolo-neve)
+# classe 2: 10651 (neve)
+# classe 3: 191607 (suolo)
+# classe 4: 177833 (vegetazione)
+#       NA: 205818 (suppongo i pixel bianchi dovuti all'inclinazione dell'immagine satellitare, per questo non li considero nei calcoli)
+
+tot2013 <- 405657
+perc_tran_2013 <- 25566 * 100 / tot2013   # 6.302396 %
+perc_snow_2013 <- 10651 * 100 / tot2013   # 2.625617 %
+perc_soil_2013 <- 191607 * 100 / tot2013  # 47.23375 %
+perc_vege_2013 <- 177833 * 100 / tot2013  # 43.83827 %
 
 freq(c2021_class$map)
-#value  count
-# classe 1: 176290 
-# classe 2: 182054 
-# classe 3: 32641 
-# classe 4: 14593 
-#       NA: 205122 (suppongo i pixel bianchi dovuti all'inclinazione dell'immagine satellitare, per questo non li considero nel grafico)
- 
+#value      count
+# classe 1: 31802 (zona transizione suolo-neve)
+# classe 2: 163453 (vegetazione)
+# classe 3: 197216 (suolo)
+# classe 4: 13107 (neve)
+#       NA: 205122 (suppongo i pixel bianchi dovuti all'inclinazione dell'immagine satellitare, per questo non li considero nei calcoli)
 
-# devo fare l'istogramma con le frequenze 
+tot2021 <- 405578
+perc_tran_2021 <- 31802 * 100 / tot2021   # 7.841155 %
+perc_vege_2021 <- 163453 * 100 / tot2021  # 40.30125 %
+perc_soil_2021 <- 197216 * 100 / tot2021  # 48.62591 %
+perc_snow_2021 <- 13107 * 100 / tot2021   # 3.231684 %
+
+# Creo un dataframe per confrontare i dati 
+# Parto creando le colonne
+class <- c("Vegetazione", "Suolo", "Transizione", "Neve")
+percent_2013 <- c(43.83827, 47.23375, 6.302396, 2.625617)
+percent_2021 <- c(40.30125, 48.62591, 7.841155, 3.231684)
+
+# Per visualizzare il dataframe uso la funzione data.frame e poi con la funzione View visualizzo la tabella in modo più ordinato
+multitemporal <- data.frame(class, percent_2013, percent_2021)
+View(multitemporal)
+
+# Salvo il dataframe come file csv con funzione write.csv, lo apro da excel e poi lo salvo come immagine da inserire nella presentazione
+# write.csv(multitemporal, file = "multitemporal.csv")
+
+# Creo l'istogramma prima con i dati del 2013 e poi con quelli del 2021 
+perc_2013 <- ggplot(multitemporal, aes(x=class, y=percent_2013, color=class)) + 
+geom_bar(stat="identity", fill="white")
+
+perc_2021 <- ggplot(multitemporal, aes(x=class, y=percent_2021, color=class)) + 
+geom_bar(stat="identity", fill="white")
 
 
-                                              ###### VARIABILITA' ######
+                                        ###### VARIABILITA' ######
 
 # Calcolo la variabilità su NIR (banda 5)
 
@@ -349,7 +368,14 @@ ggtitle("Standard deviation by viridis package")
                  # plot(dif, col=cldif)
                  # dev.off()
 
-# classi 
+# classi         # pdf("2013_class.pdf")
+                 # plot(c2013_class$map, col=clc)
+                 # dev.off()
+
+# percentuali    # pdf("percentages_2013.pdf")
+                 # ggplot(multitemporal, aes(x=class, y=percent_2013, color=class)) +
+                 # geom_bar(stat="identity", fill="white")
+                 # dev.off()
 
 #2021 
 # bande          # pdf("c2021_res_bands.pdf")
@@ -372,4 +398,11 @@ ggtitle("Standard deviation by viridis package")
                  # plot(ndvi_2021, col=cl)
                  # dev.off()
 
-# classi
+# classi         # pdf("2021_class.pdf")
+                 # plot(c2021_class$map, col=clc)
+                 # dev.off()
+
+# percentuali    # pdf("percentages_2021.pdf")
+                 # ggplot(multitemporal, aes(x=class, y=percent_2021, color=class)) +
+                 # geom_bar(stat="identity", fill="white")
+                 # dev.off()
