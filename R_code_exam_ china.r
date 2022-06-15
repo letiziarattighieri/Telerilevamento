@@ -233,36 +233,32 @@ geom_bar(stat="identity", fill="white")
                                               ###### VARIABILITA' ######
 
 # Voglio calcolare la variabilità nello spazio
-# Calcolo la variabilità su NIR (banda 5), in questo caso calcolo la deviazione standard
+# Scelgo come variabile la banda NIR (band_5), in questo caso calcolo la deviazione standard
 
 # 2013 
 nir_2013 <- c2013_res[[5]]
 # Con la funzione focal faccio passare una moving window di 3 x 3 che calcola la deviazione standard di ogni pixel
 sd3_2013 <- focal(nir_2013, matrix(1/9, 3, 3), fun=sd)
 
-clsd <- colorRampPalette(c('blue','green','pink','magenta','orange','brown','red','yellow'))(100)
-plot(sd3_2013, col=clsd)
-
-# Cambio palette di colori perché non si apprezza bene il plot: uso viridis
+# Per una visualizzazione immediata della variabilità uso viridis
 g1 <- ggplot() +
 geom_raster(sd3_2013, mapping = aes(x=x, y=y, fill=layer)) +
 scale_fill_viridis() + 
 ggtitle("Standard deviation by viridis")
-# Massima variabilità al limite tra ghiaccio e suolo (in giallo)
+# Bassa variabilità dove c'è roccia compatta e vegetazione 
+# Massima variabilità al limite tra ghiaccio e suolo e tra crepacci
 
-#2021
+#2021 : seguo lo stesso procedimento
 nir_2021 <- c2021_res[[5]]
 
 sd3_2021 <- focal(nir_2021, matrix(1/9, 3, 3), fun=sd)
-
-clsd <- colorRampPalette(c('blue','green','pink','magenta','orange','brown','red','yellow'))(100)
-plot(sd3_2021, col=clsd)
 
 g2 <- ggplot() +
 geom_raster(sd3_2021, mapping = aes(x=x, y=y, fill=layer)) +
 scale_fill_viridis() + 
 ggtitle("Standard deviation by viridis")
-# Massima variabilità al limite tra ghiaccio e suolo (giallo)
+# Bassa variabilità dove c'è roccia compatta e vegetazione 
+# Massima variabilità al limite tra ghiaccio e suolo e tra crepacci
 
 g1 + g2 
 # Si riesce ad apprezzare abbastanza bene la differenza tra le due immagini sebbene abbia usato le immagini ricampionate,
@@ -273,61 +269,91 @@ g1 + g2
 
                                               ###### ANALISI MULTIVARIATA ######
 
+# Invece di scegliere una sola variabile posso compattare tutti i dati in un sistema più semplice 
+# 2013
 c2013_pca <- rasterPCA(c2013_res)
 c2013_pca 
+
+# Faccio il summary del modello per vedere quanta variabilità spiega ogni componente
 summary(c2013_pca$model)
-# La prima componente spiega l'85.3%
+# Proportion of Variance: PC1 spiega 85.3%, PC2 spiega 13.2%, PC3 spiega 1.3%
+# Faccio un plot con tutte le componenti
 plot(c2013_pca$map)
 
+# Assegno oggetto alle prime 3 componenti
 pc1_2013 <- c2013_pca$map$PC1
 pc2_2013 <- c2013_pca$map$PC2
 pc3_2013 <- c2013_pca$map$PC3
 
-pc1 <- c2013_pca$map$PC1
-pc5_2013 <- c2013_pca$map$PC5
-pc7_2013 <- c2013_pca$map$PC7
-
-g1_pca_2013 <- ggplot() + 
+# Con ggplot faccio il plot delle singole componenti, associo al plot un oggetto
+# PC1
+gpc1_2013 <- ggplot() + 
 geom_raster(pc1_2013, mapping=aes(x=x, y=y, fill=PC1))
-
-g2_pca_2013 <- ggplot() + 
+# PC2
+gpc2_2013 <- ggplot() + 
 geom_raster(pc2_2013, mapping=aes(x=x, y=y, fill=PC2))
-
-g3_pca_2013 <- ggplot() + 
+# PC3
+gpc3_2013 <- ggplot() + 
 geom_raster(pc3_2013, mapping=aes(x=x, y=y, fill=PC3))
 
-g1_pca_2013 + g2_pca_2013 + g3_pca_2013
+gpc1_2013 + gpc2_2013 + gpc3_2013
 
+# Calcolo la deviazione standard della PC1 sempre con una moving window 3 x 3
+sd_pc1_2013 <- focal(pc1_2013, matrix(1/9, 3, 3), fun=sd)
+sd_pc1_2013 
 
-sd_2013 <- focal(pc1_2013, matrix(1/9, 3, 3), fun=sd)
-
-ggplot() + 
-geom_raster(sd_2013, mapping =aes(x=x, y=y, fill=layer)) + 
-scale_fill_viridis() +
+# Faccio ggplot della deviazione standard della PC1 usando viridis 
+im2_2013 <- ggplot() + 
+geom_raster(sd_pc1_2013, mapping =aes(x=x, y=y, fill=layer)) + 
+scale_fill_viridis(option="inferno") +
 ggtitle("Standard deviation by viridis package")
 
-g1_2013 <- ggRGB(c2013_res, 5, 4, 3, stretch="lin")
-
-im2 <- ggplot() + 
-geom_raster(pc1_2013, mapping=aes(x=x, y=y, fill=PC1))
-
-im3 <- ggplot() +
-geom_raster(sd_2013, mapping=aes(x=x, y=y, fill=layer)) +
-scale_fill_viridis(option="inferno")
-
-g1_2013 + im2 + im3
+# Visualizzo insieme i plot: ggplot dell'immagine del 2013 e la sd di PC1 basata su legenda inferno di viridis su una mw 3 x 3
+g1_2013 + im2_2013
 
 
+# 2021: stesso procedimento
+c2021_pca <- rasterPCA(c2021_res)
+c2021_pca 
 
+# Faccio il summary del modello per vedere quanta variabilità spiega ogni componente
+summary(c2021_pca$model)
+# Proportion of Variance: PC1 spiega 89.5%, PC2 spiega 9.1%, PC3 spiega 1.2%
 
+# Faccio un plot con tutte le componenti
+plot(c2021_pca$map)
 
+# Assegno oggetto alle prime 3 componenti
+pc1_2021 <- c2021_pca$map$PC1
+pc2_2021 <- c2021_pca$map$PC2
+pc3_2021 <- c2021_pca$map$PC3
 
+# Con ggplot faccio il plot delle singole componenti, associo al plot un oggetto
+# PC1
+gpc1_2021 <- ggplot() + 
+geom_raster(pc1_2021, mapping=aes(x=x, y=y, fill=PC1))
+# PC2
+gpc2_2021 <- ggplot() + 
+geom_raster(pc2_2021, mapping=aes(x=x, y=y, fill=PC2))
+# PC3
+gpc3_2021 <- ggplot() + 
+geom_raster(pc3_2021, mapping=aes(x=x, y=y, fill=PC3))
 
+gpc1_2021 + gpc2_2021 + gpc3_2021
 
+# Calcolo la deviazione standard della PC1 sempre con una moving window 3 x 3
+sd_pc1_2021 <- focal(pc1_2021, matrix(1/9, 3, 3), fun=sd)
+sd_pc1_2021 
 
+# Faccio ggplot della deviazione standard della PC1 usando viridis 
+im2_2021 <- ggplot() + 
+geom_raster(sd_pc1_2021, mapping =aes(x=x, y=y, fill=layer)) + 
+scale_fill_viridis(option="inferno") +
+ggtitle("Standard deviation by viridis package")
 
-sd3_pca <- focal(pc1, matrix(1/9, 3, 3), fun=sd)
-sd3_pca
+# Visualizzo insieme i plot: ggplot dell'immagine del 2021 e la sd di PC1 basata su legenda inferno di viridis su una mw 3 x 3
+g1_2021 + im2_2021
+
 
 # Salvo in pdf i plot per metterli nella presentazione
 #2013 
@@ -368,15 +394,27 @@ sd3_pca
                  # geom_bar(stat="identity", fill="white")
                  # dev.off()
 
-# sd3            # pdf("sd3_2013_no_viridis.pdf")
-                 # plot(sd3_2013, col=clsd)
-                 # dev.off()
-
 # sd3_viridis    # pdf("2013_sd_viridis.pdf")
                  # ggplot() +
                  # geom_raster(sd3_2013, mapping = aes(x=x, y=y, fill=layer)) +
                  # scale_fill_viridis() + 
                  # ggtitle("Standard deviation by viridis")
+                 # dev.off()
+
+# pca_map        # pdf("2013_pca$map.pdf")
+                 # plot(c2013_pca$map)
+                 # dev.off()
+
+# pc1            # pdf("pc1_2013.pdf")
+                 # ggplot() + 
+                 # geom_raster(pc1_2013, mapping=aes(x=x, y=y, fill=PC1))
+                 # dev.off()
+
+# sd_pc1         # pdf("sd_PC1_2013.pdf")
+                 # ggplot() + 
+                 # geom_raster(sd_pca_2013, mapping =aes(x=x, y=y, fill=layer)) + 
+                 # scale_fill_viridis(option="inferno") +
+                 # ggtitle("Standard deviation by viridis package")
                  # dev.off()
 #2021 
 # bande          # pdf("c2021_res_bands.pdf")
@@ -406,10 +444,6 @@ sd3_pca
 # percentuali    # pdf("percentages_2021.pdf")
                  # ggplot(multitemporal, aes(x=class, y=percent_2021, color=class)) +
                  # geom_bar(stat="identity", fill="white")
-                 # dev.off()
-
-# sd3            # pdf("2021_sd3.pdf") 
-                 # plot(sd3_2021, col=clsd)
                  # dev.off()
 
 # sd3_viridis    # pdf("2021_sd_viridis.pdf")
