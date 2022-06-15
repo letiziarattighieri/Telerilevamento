@@ -229,19 +229,21 @@ perc_2021 <- ggplot(multitemporal, aes(x=class, y=percent_2021, color=class)) +
 geom_bar(stat="identity", fill="white")
 
 
-                                        ###### VARIABILITA' ######
 
-# Calcolo la variabilità su NIR (banda 5)
+                                              ###### VARIABILITA' ######
+
+# Voglio calcolare la variabilità nello spazio
+# Calcolo la variabilità su NIR (banda 5), in questo caso calcolo la deviazione standard
 
 # 2013 
 nir_2013 <- c2013_res[[5]]
-
+# Con la funzione focal faccio passare una moving window di 3 x 3 che calcola la deviazione standard di ogni pixel
 sd3_2013 <- focal(nir_2013, matrix(1/9, 3, 3), fun=sd)
 
 clsd <- colorRampPalette(c('blue','green','pink','magenta','orange','brown','red','yellow'))(100)
-
 plot(sd3_2013, col=clsd)
 
+# Cambio palette di colori perché non si apprezza bene il plot: uso viridis
 g1 <- ggplot() +
 geom_raster(sd3_2013, mapping = aes(x=x, y=y, fill=layer)) +
 scale_fill_viridis() + 
@@ -254,7 +256,6 @@ nir_2021 <- c2021_res[[5]]
 sd3_2021 <- focal(nir_2021, matrix(1/9, 3, 3), fun=sd)
 
 clsd <- colorRampPalette(c('blue','green','pink','magenta','orange','brown','red','yellow'))(100)
-
 plot(sd3_2021, col=clsd)
 
 g2 <- ggplot() +
@@ -328,16 +329,6 @@ g1_2013 + im2 + im3
 sd3_pca <- focal(pc1, matrix(1/9, 3, 3), fun=sd)
 sd3_pca
 
-ggplot() + 
-geom_raster(sd3_pca, mapping=aes(x=x, y=y, fill=layer))
-
-
-ggplot() + 
-geom_raster(sd3_pca, mapping =aes(x=x, y=y, fill=layer)) + 
-scale_fill_viridis() +
-ggtitle("Standard deviation by viridis package")
-
-
 # Salvo in pdf i plot per metterli nella presentazione
 #2013 
 # bande          # pdf("c2013_res_bands.pdf")
@@ -377,6 +368,16 @@ ggtitle("Standard deviation by viridis package")
                  # geom_bar(stat="identity", fill="white")
                  # dev.off()
 
+# sd3            # pdf("sd3_2013_no_viridis.pdf")
+                 # plot(sd3_2013, col=clsd)
+                 # dev.off()
+
+# sd3_viridis    # pdf("2013_sd_viridis.pdf")
+                 # ggplot() +
+                 # geom_raster(sd3_2013, mapping = aes(x=x, y=y, fill=layer)) +
+                 # scale_fill_viridis() + 
+                 # ggtitle("Standard deviation by viridis")
+                 # dev.off()
 #2021 
 # bande          # pdf("c2021_res_bands.pdf")
                  # plot(c2021_res) 
@@ -405,4 +406,15 @@ ggtitle("Standard deviation by viridis package")
 # percentuali    # pdf("percentages_2021.pdf")
                  # ggplot(multitemporal, aes(x=class, y=percent_2021, color=class)) +
                  # geom_bar(stat="identity", fill="white")
+                 # dev.off()
+
+# sd3            # pdf("2021_sd3.pdf") 
+                 # plot(sd3_2021, col=clsd)
+                 # dev.off()
+
+# sd3_viridis    # pdf("2021_sd_viridis.pdf")
+                 # ggplot() +
+                 # geom_raster(sd3_2021, mapping = aes(x=x, y=y, fill=layer)) +
+                 # scale_fill_viridis() + 
+                 # ggtitle("Standard deviation by viridis")
                  # dev.off()
