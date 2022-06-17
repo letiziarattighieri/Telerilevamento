@@ -89,7 +89,7 @@ g1_2013 + g1_2021 # Vegetazione è rossa
 
 # Parto con il calcolo degli indici spettrali per vedere le condizioni della vegetazione.
 # Le foglie assorbono il rosso e riflettono NIR, se la pianta va in sofferenza riflette meno NIR e assorbe meno rosso: 
-# Calcolo DVI, calcolo prima Difference Vegetation Index perché le due immagini hanno la stessa risoluzione
+# Calcolo DVI, calcolo Difference Vegetation Index perché le due immagini hanno la stessa risoluzione
 # Riflettanza NIR - Riflettanza RED
 
 # 2013
@@ -126,6 +126,7 @@ plot(dvi_dif, col=cld) +
 title(main = "DVI 2013 - DVI 2021")
 # Le zone rosse corrispondono alle zone soggette a deforestazione o alla scomparsa, in generale, di vegetazione
 
+# NDVI lo lascio come commento perché mi ha causato problemi
 # Calcolo NDVI: (riflettanza NIR - riflettanza RED) / (riflettanza NIR + riflettanza RED)
     # Range DVI (immagine a 16 bit) : -65535 a 65535
     # Range NDVI (immagine a 16 bit) : -1 a 1
@@ -151,11 +152,12 @@ title(main = "DVI 2013 - DVI 2021")
 
 # Questa parte su NDVI l'ho lasciata come commento perché i plot che ottengo sono troppo diversi tra loro e faccio fatica a fare un confronto tra i due
 
+
                                               ###### TIME SERIES ######
 
 # Voglio provare a confrontare la situazione ghiacciai nei due anni:
 # Faccio la differenza tra la banda NIR del 2021 e quella del 2013
-# Ho scelto la banda NIR perché con le altre non si apprezzava la differenza
+# Ho scelto la banda NIR perché con le altre non si notava la differenza
 dif <- c2021[[5]] - c2013[[5]]
 dif
 cldif <- colorRampPalette(c("blue", "white", "red"))(100)
@@ -245,6 +247,7 @@ ggtitle("2021 percentages")
 
 
                                               ###### VARIABILITA' ######
+# Lascio questa parte come commento ma ho provato a calcolare la variabilità scegliendo come variabile NIR
 
 # Voglio calcolare la variabilità nello spazio
 # Scelgo come variabile la banda NIR (band_5), in questo caso calcolo la deviazione standard
@@ -288,6 +291,8 @@ ggtitle("2021 percentages")
                                               ###### ANALISI MULTIVARIATA ######
 
 # Invece di scegliere una sola variabile posso compattare tutti i dati in un sistema più semplice 
+# Inizio con l'analisi multivariata
+
 # 2013
 c2013_pca <- rasterPCA(c2013)
 c2013_pca 
@@ -319,11 +324,12 @@ ggtitle("PC3 2013")
 
 gpc1_2013 + gpc2_2013 + gpc3_2013
 
+# Per vedere la variabilità calcolo la deviazione standard sulla PC1 di entrambe le immagini
 # Calcolo la deviazione standard della PC1 sempre con una moving window 3 x 3
 sd_pc1_2013 <- focal(pc1_2013, matrix(1/9, 3, 3), fun=sd)
 sd_pc1_2013 
 
-# Faccio ggplot della deviazione standard della PC1 usando viridis 
+# Faccio ggplot della deviazione standard della PC1 usando viridis. Con opzione "inferno" non si vedeva bene la differenza.
 im2_2013 <- ggplot() + 
 geom_raster(sd_pc1_2013, mapping =aes(x=x, y=y, fill=layer)) + 
 scale_fill_viridis() +
@@ -336,7 +342,7 @@ ggtitle("Standard deviation over PC1 by viridis package - 2013")
 g1_2013 + im2_2013
 
 
-# 2021: stesso procedimento
+# 2021: stesso procedimento: prima analisi multivariata
 c2021_pca <- rasterPCA(c2021)
 c2021_pca 
 
@@ -368,6 +374,7 @@ ggtitle("PC3 2021")
 
 gpc1_2021 + gpc2_2021 + gpc3_2021
 
+# Calcolo della variabilità 
 # Calcolo la deviazione standard della PC1 sempre con una moving window 3 x 3
 sd_pc1_2021 <- focal(pc1_2021, matrix(1/9, 3, 3), fun=sd)
 sd_pc1_2021 
