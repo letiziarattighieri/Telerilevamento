@@ -17,3 +17,8 @@ import_2021 <- lapply(list_2021, raster)
 china_2021 <- stack(import_2021)
 
 c2021 <- aggregate(china_2021, fact=10)
+
+
+g1_2013 <- ggRGB(c2013, 5, 4, 3, stretch="lin") +            g1_2021 <- ggRGB(c2021, 5, 4, 3, stretch="lin") +      
+           ggtitle("ggplot 2013")                                       ggtitle("ggplot 2021")
+
