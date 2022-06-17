@@ -250,31 +250,35 @@ ggtitle("2021 percentages")
 # Scelgo come variabile la banda NIR (band_5), in questo caso calcolo la deviazione standard
 
 # 2013 
-nir_2013 <- c2013[[5]]
+# nir_2013 <- c2013[[5]]
+
 # Con la funzione focal faccio passare una moving window di 3 x 3 che calcola la deviazione standard di ogni pixel
-sd3_2013 <- focal(nir_2013, matrix(1/9, 3, 3), fun=sd)
+# sd3_2013 <- focal(nir_2013, matrix(1/9, 3, 3), fun=sd)
 
 # Per una visualizzazione immediata della variabilità uso viridis
-g1 <- ggplot() +
-geom_raster(sd3_2013, mapping = aes(x=x, y=y, fill=layer)) +
-scale_fill_viridis() + 
-ggtitle("Standard deviation over NIR by viridis - 2013")
+
+# g1 <- ggplot() +
+# geom_raster(sd3_2013, mapping = aes(x=x, y=y, fill=layer)) +
+# scale_fill_viridis() + 
+# ggtitle("Standard deviation over NIR by viridis - 2013")
+
 # Bassa variabilità dove c'è roccia compatta e vegetazione 
 # Massima variabilità al limite tra ghiaccio e suolo e tra crepacci
 
 # 2021 : seguo lo stesso procedimento
-nir_2021 <- c2021[[5]]
+# nir_2021 <- c2021[[5]]
 
-sd3_2021 <- focal(nir_2021, matrix(1/9, 3, 3), fun=sd)
+# sd3_2021 <- focal(nir_2021, matrix(1/9, 3, 3), fun=sd)
 
-g2 <- ggplot() +
-geom_raster(sd3_2021, mapping = aes(x=x, y=y, fill=layer)) +
-scale_fill_viridis() + 
-ggtitle("Standard deviation over NIR by viridis - 2021")
+# g2 <- ggplot() +
+# geom_raster(sd3_2021, mapping = aes(x=x, y=y, fill=layer)) +
+# scale_fill_viridis() + 
+# ggtitle("Standard deviation over NIR by viridis - 2021")
+
 # Bassa variabilità dove c'è roccia compatta e vegetazione 
 # Massima variabilità al limite tra ghiaccio e suolo e tra crepacci
 
-g1 + g2 
+# g1 + g2 
 # Si riesce ad apprezzare abbastanza bene la differenza tra le due immagini sebbene abbia usato le immagini ricampionate,
 # specialmente nelle zone in cui la variabilità è maggiore, quindi in corrispondenza del ghiaccio e dei crepacci
 # Se si presta abbastanza attenzione si riescono a intravedere anche le strade che portano da Chengdu alle montagne
