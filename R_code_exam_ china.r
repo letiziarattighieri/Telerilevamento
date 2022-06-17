@@ -329,6 +329,9 @@ geom_raster(sd_pc1_2013, mapping =aes(x=x, y=y, fill=layer)) +
 scale_fill_viridis() +
 ggtitle("Standard deviation over PC1 by viridis package - 2013")
 
+# Bassa variabilità dove c'è roccia compatta e vegetazione 
+# Massima variabilità al limite tra ghiaccio e suolo e tra crepacci
+
 # Visualizzo insieme i plot: ggplot dell'immagine del 2013 e la sd di PC1 basata su legenda inferno di viridis su una mw 3 x 3
 g1_2013 + im2_2013
 
@@ -374,6 +377,9 @@ im2_2021 <- ggplot() +
 geom_raster(sd_pc1_2021, mapping =aes(x=x, y=y, fill=layer)) + 
 scale_fill_viridis() +
 ggtitle("Standard deviation over PC1 by viridis package - 2021")
+
+# Bassa variabilità dove c'è roccia compatta e vegetazione 
+# Massima variabilità al limite tra ghiaccio e suolo e tra crepacci
 
 # Visualizzo insieme i plot: ggplot dell'immagine del 2021 e la sd di PC1 basata su legenda inferno di viridis su una mw 3 x 3
 g1_2021 + im2_2021
