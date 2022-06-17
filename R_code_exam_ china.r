@@ -126,32 +126,30 @@ plot(dvi_dif, col=cld) +
 title(main = "DVI 2013 - DVI 2021")
 # Le zone rosse corrispondono alle zone soggette a deforestazione o alla scomparsa, in generale, di vegetazione
 
-
 # Calcolo NDVI: (riflettanza NIR - riflettanza RED) / (riflettanza NIR + riflettanza RED)
     # Range DVI (immagine a 16 bit) : -65535 a 65535
     # Range NDVI (immagine a 16 bit) : -1 a 1
 
 # 2013
-ndvi_2013 = dvi_2013 / (c2013[[5]] + c2013[[4]])
-
-plot(ndvi_2013, col=cl) +
-title(main = "NDVI 2013")
+# ndvi_2013 = dvi_2013 / (c2013[[5]] + c2013[[4]])
+# plot(ndvi_2013, col=cl) +
+# title(main = "NDVI 2013")
 
 #2021
-ndvi_2021 = dvi_2021 / (c2021[[5]] + c2021[[4]])
-
-plot(ndvi_2021, col=cl) +
-title(main = "NDVI 2021")
+# ndvi_2021 = dvi_2021 / (c2021[[5]] + c2021[[4]])
+# plot(ndvi_2021, col=cl) +
+# title(main = "NDVI 2021")
 
 # Confronto tra i due NDVI creando un multiframe
 
-par(mfrow=c(1, 2))
-plot(ndvi_2013, col=cl) +
-title(main = "NDVI 2013")
-plot(ndvi_2021, col=cl) +
-title(main = "NDVI 2021")
+# par(mfrow=c(1, 2))
+# plot(ndvi_2013, col=cl) +
+# title(main = "NDVI 2013")
+# plot(ndvi_2021, col=cl) +
+# title(main = "NDVI 2021")
 # Particolarmente evidenti le strade che vanno da Chengdu verso la montagna, in giallo
 
+# Questa parte su NDVI l'ho lasciata come commento perché i plot che ottengo sono troppo diversi tra loro e faccio fatica a fare un confronto tra i due
 
                                               ###### TIME SERIES ######
 
