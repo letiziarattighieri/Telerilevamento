@@ -157,8 +157,6 @@ plot(ndvi_2021, col=cl) +
 title(main = "NDVI 2021")
 # Particolarmente evidenti le strade che vanno da Chengdu verso la montagna, in giallo
 
-# Questa parte su NDVI l'ho lasciata come commento perché i plot che ottengo sono troppo diversi tra loro e faccio fatica a fare un confronto tra i due
-
 
                                               ###### TIME SERIES ######
 
