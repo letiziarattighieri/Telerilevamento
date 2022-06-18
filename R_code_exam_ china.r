@@ -138,13 +138,13 @@ title(main = "DVI 2013 - DVI 2021")
     # Range DVI (immagine a 16 bit) : -65535 a 65535
     # Range NDVI (immagine a 16 bit) : -1 a 1
 
-# 2013
-ndvi_2013 = dvi_2013 / (c2013[[5]] + c2013[[4]])
-plot(ndvi_2013, col=cl) +
-title(main = "NDVI 2013")
+# 2013                                                               
+ndvi_2013 = (c2013[[5]] - c2013[[4]]) / (c2013[[5]] + c2013[[4]])    
+plot(ndvi_2013, col=cl) +                                            
+title(main = "NDVI 2013")                                            
 
 #2021
-ndvi_2021 = dvi_2021 / (c2021[[5]] + c2021[[4]])
+ndvi_2021 = (c2021[[5]] - c2021[[4]]) / (c2021[[5]] + c2021[[4]])
 plot(ndvi_2021, col=cl) +
 title(main = "NDVI 2021")
 
