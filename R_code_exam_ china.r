@@ -45,9 +45,9 @@ c2013
 # Rifaccio il plot delle bande e il plotRGB per verificare che il ricampionamento sia andato a buon fine
 plot(c2013)
 
-# Faccio un plot con la banda R nella componente R, banda G in G e banda B in B er vedere l'immagine con i colori reali
-c2013_norm <- ggRGB(c2013, 4, 3, 2, stretch="lin") +            c2021_norm <- ggRGB(c2021, 4, 3, 2, stretch="lin") + 
-              ggtitle("Provincia del Sichuan nel 2013")                       ggtitle("Provincia del Sichuan nel 2021")
+# Faccio un plot con la banda R nella componente R, banda G in G e banda B in B er vedere l'immagine con i colori reali                                                           
+c2013_norm <- ggRGB(c2013, 4, 3, 2, stretch="lin") +            
+              ggtitle("Provincia del Sichuan nel 2013")                       
 
 # Provo a fare un ggplot con la banda NIR in R, banda R in G e banda g in B
 # in questo caso ho specificato lo stretch perché altrimenti i plot di ritorno sono troppo scuri
