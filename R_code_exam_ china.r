@@ -383,6 +383,8 @@ ggtitle("Standard deviation over PC1 by viridis package - 2021")
 # Visualizzo insieme i plot: ggplot dell'immagine del 2021 e la sd di PC1 basata su legenda inferno di viridis su una mw 3 x 3
 g1_2021 + im2_2021
 
+# Visualizzo insieme i plot della variabilità calcolata sulla PC1 per entrambi gli anni
+im2_2013 + im2_2021
 
 # I plot sono stati salvati in pdf seguendo la struttura generale:
      # pdf("nome_plot.pdf)
