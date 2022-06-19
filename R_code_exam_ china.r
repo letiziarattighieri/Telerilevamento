@@ -159,21 +159,6 @@ title(main = "NDVI 2021")
 # Particolarmente evidenti le strade che vanno da Chengdu verso la montagna, in giallo
 
 
-                                              ###### TIME SERIES ######
-
-# Voglio provare a confrontare la situazione ghiacciai nei due anni:
-# Faccio la differenza tra la banda NIR del 2021 e quella del 2013
-# Ho scelto la banda NIR perché con le altre non si notava la differenza
-dif <- c2021[[5]] - c2013[[5]]
-dif
-cldif <- colorRampPalette(c("blue", "white", "red"))(100)
-
-plot(dif, col=cldif) +
-title(main = "NIR 2021 - NIR 2013")
-# In blu scuro si vede il ghiaccio presente nel 2013 ma assente nel 2021,
-# al contrario, in rosso, si vede il ghiaccio presente nel 2021 e che non si era ancora formato nel 2013
-
-
                                               ###### LAND COVER ######
 
 # Voglio vedere com'è cambiato il suolo in un intervallo di 8 anni
