@@ -11,6 +11,7 @@
   # B5 = NIR
 
 # Le immagini sono a 16 bit 
+# Risoluzione 30 m
 
 library(raster)
 library(RStoolbox) # Per visualizzare le immagini e calcoli
