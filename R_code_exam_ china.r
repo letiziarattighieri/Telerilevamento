@@ -35,7 +35,6 @@ import_2013 <- lapply(list_2013, raster)
 
 # Ora che ho importato le 7 bande posso procedere con lo stack (creo un blocco comune con tutti i dati che ho importato): 
 china_2013 <- stack(import_2013)
-china_2013
 
 # Ricampiono l'immagine perché ha dimensioni diverse da quella del 2021:
 china_2013_res <- resampling(china_2013, china_2021)
@@ -75,7 +74,7 @@ plot(c2021)
 
 # Faccio un plot con la banda R nella componente R, banda G in G e banda B in B er vedere l'immagine con i colori naturali
 c2021_norm <- ggRGB(c2021, 4, 3, 2, stretch="lin") + 
-ggtitle("Provincia del Sichuan nel 2021")
+              ggtitle("Provincia del Sichuan nel 2021")
 
 # Faccio ggplot con immagine ricampionata
 # NIR in R, red in G, green in B
