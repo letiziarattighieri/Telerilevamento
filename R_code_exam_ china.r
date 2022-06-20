@@ -25,6 +25,7 @@ setwd("C:/lab/china_exam/")
 
                                               ###### IMPORTAZIONE DATI ######
 
+# Importo prima i dati del 2021 perché ho dovuto ricampionare l'immagine del 2013 abbassando la qualità per renderla uguale a 2021
 # 2021
 # Importo le bande relative dell'immagine del 2021 facendo una lista perché ho scaricato le 7 bande separatamente; 
 # quindi, per evitare di importarle singolarmente, creo una lista con funzione list.files
