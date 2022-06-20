@@ -37,14 +37,13 @@ import_2013 <- lapply(list_2013, raster)
 china_2013 <- stack(import_2013)
 china_2013
 
-# Faccio un plot delle bande che ho importato e unito con lo stack
-plot(china_2013)
+# Ricampiono l'immagine perché ha dimensioni diverse da quella del 2021:
+china_2013_res <- resampling(china_2013, china_2021)
 
-# Ricampiono l'immagine perché le dimensioni rallentano il sistema (ncell: more than 61 million)
-c2013 <- aggregate(china_2013, fact=10)
-c2013
+# Con la funzione aggregate ricampiono nuovamente l'immagine perché ha quasi 61 milioni di pixel:
+c2013 <- aggregate(china_2013_res, fact=10)
 
-# Rifaccio il plot delle bande e il plotRGB per verificare che il ricampionamento sia andato a buon fine
+# Faccio un plot normale per vedere le bande che ho importato
 plot(c2013)
 
 # Faccio un plot con la banda R nella componente R, banda G in G e banda B in B er vedere l'immagine con i colori naturali                                                           
@@ -55,7 +54,7 @@ c2013_norm <- ggRGB(c2013, 4, 3, 2, stretch="lin") +
 # in questo caso ho specificato lo stretch perché altrimenti i plot di ritorno sono troppo scuri
 g1_2013 <- ggRGB(c2013, 5, 4, 3, stretch="lin") + 
            ggtitle("ggplot 2013") 
-g1_2013
+
 # Userò solo il ggplot con NIR in RED perché quando è in GREEN non si distingue il suolo nudo
 # In questo plot sono evidenti i ghiacciai, la vegetazione che appare rossa e le strade:
 # particolarmente evidente la città di Chengdu in basso a destra
@@ -67,15 +66,11 @@ list_2021 <- list.files(pattern="2021_SR_B")
 import_2021 <- lapply(list_2021, raster)
 
 china_2021 <- stack(import_2021)
-china_2021
 
-# Faccio plot per vedere se l'importazione è andata a buon fine 
-plot(china_2021)
-
-# Ricampiono l'immagine (ncell: almost 61 million)
+# Ricampiono l'immagine con funzione aggregate perché immagine pesa troppo
 c2021 <- aggregate(china_2021, fact=10)
-c2021
 
+# Plot normale per vedere le bande
 plot(c2021)
 
 # Faccio un plot con la banda R nella componente R, banda G in G e banda B in B er vedere l'immagine con i colori naturali
@@ -86,7 +81,6 @@ ggtitle("Provincia del Sichuan nel 2021")
 # NIR in R, red in G, green in B
 g1_2021 <- ggRGB(c2021, 5, 4, 3, stretch="lin") + 
            ggtitle("ggplot 2021") 
-g1_2021
 # Per lo stesso motivo userò solo il ggplot con NIR in RED
 
 # Metto a confronto il plot del 2013 e quello del 2021
