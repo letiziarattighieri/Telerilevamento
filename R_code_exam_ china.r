@@ -1,10 +1,11 @@
+                                              ###### ESAME 22 GIUGNO 2022 ######
 # Analisi e confronto di due immagini landsat della stessa località (p130r038): 
 # una acquisita nel 2013 e l'altra nel 2021, entrambe nel mese di dicembre 
 # Le aree interessate comprendono la parte più occidentale della città di Chengdu (17 milioni di abitanti) e parte dell'altopiano tibetano
 
 # https://www.usgs.gov/faqs/what-are-best-landsat-spectral-bands-use-my-research 
 # Sito da cui ho scaricato le immagini satellitari con spiegazione di ogni banda (Landsat 8/9 Operational Land Image (OLI) and Thermal Infrared Sensor (TIRS)) 
-# In questo caso:
+
   # B2 = blue
   # B3 = green
   # B4 = red
@@ -157,6 +158,11 @@ title(main = "NDVI 2013")
 plot(ndvi_2021, col=cl) +
 title(main = "NDVI 2021")
 # Particolarmente evidenti le strade che vanno da Chengdu verso la montagna, in giallo
+
+# Valori <0.1: suolo nudo
+#         0.1 - 0.2: copertura vegetale quasi assente
+#         0.2 - 0.3: copertura vegetale molto bassa 
+#         0.3 - 0.4: copertura vegetale bassa con vigoria bassa o copertura vegetale molto bassa con vigoria alta
 
 
                                               ###### LAND COVER ######
@@ -330,7 +336,7 @@ ggtitle("Standard deviation over PC1 by viridis package - 2013")
 # Bassa variabilità dove c'è roccia compatta e vegetazione 
 # Massima variabilità al limite tra ghiaccio e suolo e tra crepacci
 
-# Visualizzo insieme i plot: ggplot dell'immagine del 2013 e la sd di PC1 basata su legenda inferno di viridis su una mw 3 x 3
+# Visualizzo insieme i plot: ggplot dell'immagine del 2013 e la sd di PC1 basata su una mw 3 x 3
 g1_2013 + im2_2013
 
 
@@ -380,7 +386,7 @@ ggtitle("Standard deviation over PC1 by viridis package - 2021")
 # Bassa variabilità dove c'è roccia compatta e vegetazione 
 # Massima variabilità al limite tra ghiaccio e suolo e tra crepacci
 
-# Visualizzo insieme i plot: ggplot dell'immagine del 2021 e la sd di PC1 basata su legenda inferno di viridis su una mw 3 x 3
+# Visualizzo insieme i plot: ggplot dell'immagine del 2021 e la sd di PC1 basata su una mw 3 x 3
 g1_2021 + im2_2021
 
 # Visualizzo insieme i plot della variabilità calcolata sulla PC1 per entrambi gli anni
