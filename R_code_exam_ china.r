@@ -185,17 +185,17 @@ plot(c2021_class$map, col=clc)
 # Frequenze 
 freq(c2013_class$map)
 # value     count
-# classe 1: 25566 (zona transizione suolo-neve)
-# classe 2: 10651 (neve)
-# classe 3: 191607 (suolo)
-# classe 4: 177833 (vegetazione)
-#       NA: 205818 (suppongo i pixel bianchi dovuti all'inclinazione dell'immagine satellitare, per questo non li considero nei calcoli)
+# classe 1: 11668 (neve)
+# classe 2: 25442 (zona transizione suolo-neve)
+# classe 3: 188305 (suolo)
+# classe 4: 180225 (vegetazione)
+#       NA: 205060 (suppongo i pixel bianchi dovuti all'inclinazione dell'immagine satellitare, per questo non li considero nei calcoli)
 
-tot2013 <- 405657
-perc_tran_2013 <- 25566 * 100 / tot2013   # 6.302396 %
-perc_snow_2013 <- 10651 * 100 / tot2013   # 2.625617 %
-perc_soil_2013 <- 191607 * 100 / tot2013  # 47.23375 %
-perc_vege_2013 <- 177833 * 100 / tot2013  # 43.83827 %
+tot2013 <- 405640
+perc_snow_2013 <- 11668 * 100 / tot2013   # 2.876442 %
+perc_tran_2013 <- 25442 * 100 / tot2013   # 6.272064 %
+perc_soil_2013 <- 188305 * 100 / tot2013  # 46.4217 %
+perc_vege_2013 <- 180225 * 100 / tot2013  # 44.42979 %
 
 freq(c2021_class$map)
 #value      count
@@ -215,7 +215,7 @@ perc_vege_2021 <- 164333 * 100 / tot2021  # 40.51822 %
 # Creo un dataframe per confrontare i dati 
 # Parto creando le colonne
 class <- c("Vegetazione", "Suolo", "Transizione", "Neve")
-percent_2013 <- c(43.83827, 47.23375, 6.302396, 2.625617)
+percent_2013 <- c(44.42979, 46.4217, 6.272064, 2.876442)
 percent_2021 <- c(40.51822, 48.05389, 7.849538, 3.57835)
 
 # Per visualizzare il dataframe uso la funzione data.frame e poi con la funzione View visualizzo la tabella in modo più ordinato
@@ -286,7 +286,6 @@ g1 + g2
 
 # 2013
 c2013_pca <- rasterPCA(c2013)
-c2013_pca 
 
 # Faccio il summary del modello per vedere quanta variabilità spiega ogni componente
 summary(c2013_pca$model)
@@ -318,7 +317,6 @@ gpc1_2013 + gpc2_2013 + gpc3_2013
 # Per vedere la variabilità calcolo la deviazione standard sulla PC1 di entrambe le immagini
 # Calcolo la deviazione standard della PC1 sempre con una moving window 3 x 3
 sd_pc1_2013 <- focal(pc1_2013, matrix(1/9, 3, 3), fun=sd)
-sd_pc1_2013 
 
 # Faccio ggplot della deviazione standard della PC1 usando viridis. Con opzione "inferno" non si vedeva bene la differenza.
 im2_2013 <- ggplot() + 
@@ -335,7 +333,7 @@ g1_2013 + im2_2013
 
 # 2021: stesso procedimento: prima analisi multivariata
 c2021_pca <- rasterPCA(c2021)
-c2021_pca 
+
 
 # Faccio il summary del modello per vedere quanta variabilità spiega ogni componente
 summary(c2021_pca$model)
