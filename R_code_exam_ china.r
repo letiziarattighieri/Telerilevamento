@@ -25,7 +25,38 @@ setwd("C:/lab/china_exam/")
 
                                               ###### IMPORTAZIONE DATI ######
 
-# 2013
+# 2021
+# Importo le bande relative dell'immagine del 2021 facendo una lista perché ho scaricato le 7 bande separatamente; 
+# quindi, per evitare di importarle singolarmente, creo una lista con funzione list.files
+list_2021 <- list.files(pattern="2021_SR_B")
+
+# Ora che ho la lista applico, con funzione lapply, la funzione raster per importare tutto
+import_2021 <- lapply(list_2021, raster)
+
+# Ora che ho importato le 7 bande posso procedere con lo stack (creo un blocco comune con tutti i dati che ho importato): 
+china_2021 <- stack(import_2021)
+
+# Ricampiono l'immagine con funzione aggregate perché immagine pesa troppo
+c2021 <- aggregate(china_2021, fact=10)
+
+# Plot normale per vedere le bande
+plot(c2021)
+
+# Faccio un plot con la banda R nella componente R, banda G in G e banda B in B er vedere l'immagine con i colori naturali
+c2021_norm <- ggRGB(c2021, 4, 3, 2, stretch="lin") + 
+              ggtitle("Provincia del Sichuan nel 2021")
+
+# Faccio ggplot con immagine ricampionata
+# NIR in R, red in G, green in B
+g1_2021 <- ggRGB(c2021, 5, 4, 3, stretch="lin") + 
+           ggtitle("ggplot 2021") 
+
+# Userò solo il ggplot con NIR in RED perché quando è in GREEN non si distingue il suolo nudo
+# In questo plot sono evidenti i ghiacciai, la vegetazione che appare rossa e le strade:
+# particolarmente evidente la città di Chengdu in basso a destra
+
+
+# 2013: faccio lo stesso procedimento
 # Importo le bande relative dell'immagine del 2013 facendo una lista perché ho scaricato le 7 bande separatamente; 
 # quindi, per evitare di importarle singolarmente, creo una lista con funzione list.files
 list_2013 <- list.files(pattern="2013_SR_B")
@@ -54,32 +85,6 @@ c2013_norm <- ggRGB(c2013, 4, 3, 2, stretch="lin") +
 g1_2013 <- ggRGB(c2013, 5, 4, 3, stretch="lin") + 
            ggtitle("ggplot 2013") 
 
-# Userò solo il ggplot con NIR in RED perché quando è in GREEN non si distingue il suolo nudo
-# In questo plot sono evidenti i ghiacciai, la vegetazione che appare rossa e le strade:
-# particolarmente evidente la città di Chengdu in basso a destra
-
-# 2021
-# Faccio lo stesso procedimento per importare i dati relativi all'immagine del 2021
-list_2021 <- list.files(pattern="2021_SR_B")
-
-import_2021 <- lapply(list_2021, raster)
-
-china_2021 <- stack(import_2021)
-
-# Ricampiono l'immagine con funzione aggregate perché immagine pesa troppo
-c2021 <- aggregate(china_2021, fact=10)
-
-# Plot normale per vedere le bande
-plot(c2021)
-
-# Faccio un plot con la banda R nella componente R, banda G in G e banda B in B er vedere l'immagine con i colori naturali
-c2021_norm <- ggRGB(c2021, 4, 3, 2, stretch="lin") + 
-              ggtitle("Provincia del Sichuan nel 2021")
-
-# Faccio ggplot con immagine ricampionata
-# NIR in R, red in G, green in B
-g1_2021 <- ggRGB(c2021, 5, 4, 3, stretch="lin") + 
-           ggtitle("ggplot 2021") 
 # Per lo stesso motivo userò solo il ggplot con NIR in RED
 
 # Metto a confronto il plot del 2013 e quello del 2021
