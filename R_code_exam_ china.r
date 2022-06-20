@@ -37,7 +37,7 @@ import_2013 <- lapply(list_2013, raster)
 china_2013 <- stack(import_2013)
 
 # Ricampiono l'immagine perché ha dimensioni diverse da quella del 2021:
-china_2013_res <- resampling(china_2013, china_2021)
+china_2013_res <- resample(china_2013, china_2021)
 
 # Con la funzione aggregate ricampiono nuovamente l'immagine perché ha quasi 61 milioni di pixel:
 c2013 <- aggregate(china_2013_res, fact=10)
