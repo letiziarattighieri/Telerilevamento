@@ -216,9 +216,9 @@ perc_vege_2021 <- 164333 * 100 / tot2021  # 40.51822 %
 
 # Creo un dataframe per confrontare i dati 
 # Parto creando le colonne
-class <- c("Vegetazione", "Suolo", "Transizione", "Neve")
-percent_2013 <- c(44.42979, 46.4217, 6.272064, 2.876442)
-percent_2021 <- c(40.51822, 48.05389, 7.849538, 3.57835)
+class <- c("Vegetazione", "Transizione", "Suolo", "Neve")
+percent_2013 <- c(44.42979, 6.272064, 46.4217,  2.876442)
+percent_2021 <- c(40.51822, 7.849538, 48.05389, 3.57835)
 
 # Per visualizzare il dataframe uso la funzione data.frame e poi con la funzione View visualizzo la tabella in modo più ordinato
 multitemporal <- data.frame(class, percent_2013, percent_2021)
