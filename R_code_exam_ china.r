@@ -1,5 +1,5 @@
                                               ###### ESAME 22 GIUGNO 2022 ######
-# Analisi e confronto di due immagini landsat della stessa località (p130r038): 
+# Analisi e confronto di due immagini landsat della stessa località (p130r038): Provincia di Sichuan, Cina 
 # una acquisita nel 2013 e l'altra nel 2021, entrambe nel mese di dicembre 
 # Le aree interessate comprendono la parte più occidentale della città di Chengdu (17 milioni di abitanti) e parte dell'altopiano tibetano
 
@@ -27,8 +27,7 @@ setwd("C:/lab/china_exam/")
 
 # Importo prima i dati del 2021 perché ho dovuto ricampionare l'immagine del 2013 abbassando la qualità per renderla uguale a 2021
 # 2021
-# Importo le bande relative dell'immagine del 2021 facendo una lista perché ho scaricato le 7 bande separatamente; 
-# quindi, per evitare di importarle singolarmente, creo una lista con funzione list.files
+# Importo le bande creando prima una lista con la funzione list.files perché ho scaricato le 7 bande separatamente; 
 list_2021 <- list.files(pattern="2021_SR_B")
 
 # Ora che ho la lista applico, con funzione lapply, la funzione raster per importare tutto
@@ -44,6 +43,7 @@ c2021 <- aggregate(china_2021, fact=10)
 plot(c2021)
 
 # Faccio un plot con la banda R nella componente R, banda G in G e banda B in B er vedere l'immagine con i colori naturali
+# in questo caso ho specificato lo stretch perché altrimenti i plot di ritorno sono troppo scuri
 c2021_norm <- ggRGB(c2021, 4, 3, 2, stretch="lin") + 
               ggtitle("Provincia del Sichuan nel 2021")
 
@@ -58,8 +58,7 @@ g1_2021 <- ggRGB(c2021, 5, 4, 3, stretch="lin") +
 
 
 # 2013
-# Importo le bande relative dell'immagine del 2013 facendo una lista perché ho scaricato le 7 bande separatamente; 
-# quindi, per evitare di importarle singolarmente, creo una lista con funzione list.files
+# Importo le bande facendo una lista perché ho scaricato le 7 bande separatamente; 
 list_2013 <- list.files(pattern="2013_SR_B")
 
 # Ora che ho la lista applico, con funzione lapply, la funzione raster per importare tutto
@@ -77,16 +76,13 @@ c2013 <- aggregate(china_2013_res, fact=10)
 # Faccio un plot normale per vedere le bande che ho importato
 plot(c2013)
 
-# Faccio un plot con la banda R nella componente R, banda G in G e banda B in B er vedere l'immagine con i colori naturali                                                           
+# Faccio un plot con la banda R nella componente R, banda G in G e banda B in B er vedere l'immagine con i colori reali                                                           
 c2013_norm <- ggRGB(c2013, 4, 3, 2, stretch="lin") +            
               ggtitle("Provincia del Sichuan nel 2013")                       
 
 # Provo a fare un ggplot con la banda NIR in R, banda R in G e banda g in B
-# in questo caso ho specificato lo stretch perché altrimenti i plot di ritorno sono troppo scuri
 g1_2013 <- ggRGB(c2013, 5, 4, 3, stretch="lin") + 
            ggtitle("ggplot 2013") 
-
-# Per lo stesso motivo userò solo il ggplot con NIR in RED
 
 # Metto a confronto il plot del 2013 e quello del 2021
 g1_2013 + g1_2021 # Vegetazione è rossa
@@ -98,7 +94,7 @@ g1_2013 + g1_2021 # Vegetazione è rossa
 # Parto con il calcolo degli indici spettrali per vedere le condizioni della vegetazione.
 # Le foglie assorbono il rosso e riflettono NIR, se la pianta va in sofferenza riflette meno NIR e assorbe meno rosso: 
 # Calcolo DVI, calcolo Difference Vegetation Index perché le due immagini hanno la stessa risoluzione
-# Riflettanza NIR - Riflettanza RED
+# DVI = Riflettanza NIR - Riflettanza RED
 
 # 2013
 dvi_2013 = c2013[[5]] - c2013[[4]]
@@ -166,7 +162,7 @@ title(main = "NDVI 2021")
 
                                               ###### LAND COVER ######
 
-# Voglio vedere com'è cambiato il suolo in un intervallo di 8 anni
+# Voglio vedere com'è cambiato l'utilizzo del suolo in un intervallo di 8 anni
 # Faccio la classificazione in base alla disposizione dei pixel nello spazio a 3 bande
 # Suddivido i pixel in 4 classi: suolo nudo, vegetazione, neve e transizione tra neve e suolo
 # E' stato necessario suddividere in 4 classi perché provando con 3 veniva a mancare una parte consistende del suolo nudo nel plot 2021
@@ -372,7 +368,6 @@ gpc1_2021 + gpc2_2021 + gpc3_2021
 # Calcolo della variabilità 
 # Calcolo la deviazione standard della PC1 sempre con una moving window 3 x 3
 sd_pc1_2021 <- focal(pc1_2021, matrix(1/9, 3, 3), fun=sd)
-sd_pc1_2021 
 
 # Faccio ggplot della deviazione standard della PC1 usando viridis 
 im2_2021 <- ggplot() + 
