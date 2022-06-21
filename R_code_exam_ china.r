@@ -57,7 +57,7 @@ g1_2021 <- ggRGB(c2021, 5, 4, 3, stretch="lin") +
 # particolarmente evidente la città di Chengdu in basso a destra
 
 
-# 2013: faccio lo stesso procedimento
+# 2013
 # Importo le bande relative dell'immagine del 2013 facendo una lista perché ho scaricato le 7 bande separatamente; 
 # quindi, per evitare di importarle singolarmente, creo una lista con funzione list.files
 list_2013 <- list.files(pattern="2013_SR_B")
