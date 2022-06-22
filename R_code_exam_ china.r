@@ -1,7 +1,7 @@
                                               ###### ESAME 22 GIUGNO 2022 ######
 # Analisi e confronto di due immagini landsat della stessa località (p130r038): Provincia di Sichuan, Cina 
 # una acquisita nel 2013 e l'altra nel 2021, entrambe nel mese di dicembre 
-# Le aree interessate comprendono la parte più occidentale della città di Chengdu (17 milioni di abitanti) e parte dell'altopiano tibetano
+# Le aree interessate comprendono la parte più occidentale della città di Chengdu (17 milioni di abitanti) parte dell'altopiano tibetano 
 
 # https://www.usgs.gov/faqs/what-are-best-landsat-spectral-bands-use-my-research 
 # Sito da cui ho scaricato le immagini satellitari con spiegazione di ogni banda (Landsat 8/9 Operational Land Image (OLI) and Thermal Infrared Sensor (TIRS)) 
